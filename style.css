@@ -1,193 +1,257 @@
-:root{
-    --bg:#030712;
-    --card:#111827;
-    --border:rgba(255,255,255,.08);
-    --green:#22c55e;
-    --green2:#86efac;
-    --text:#ffffff;
-    --muted:#cbd5e1;
+:root {
+    --bg: #030712;
+    --card: #111827;
+    --border: rgba(255, 255, 255, .08);
+    --green: #22c55e;
+    --green2: #86efac;
+    --text: #ffffff;
+    --muted: #cbd5e1;
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-    min-height:100vh;
-    color:var(--text);
-    font-family:Inter,Segoe UI,sans-serif;
+body {
+    min-height: 100vh;
+    color: var(--text);
+    font-family: Inter, Segoe UI, sans-serif;
     background:
-        radial-gradient(circle at 15% 20%,rgba(34,197,94,.20),transparent 30%),
-        radial-gradient(circle at 85% 80%,rgba(59,130,246,.18),transparent 30%),
-        linear-gradient(135deg,#020617,#0f172a,#111827);
+        radial-gradient(circle at 15% 20%, rgba(34, 197, 94, .20), transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(59, 130, 246, .18), transparent 30%),
+        linear-gradient(135deg, #020617, #0f172a, #111827);
 }
 
-.layout{
-    display:flex;
-    min-height:100vh;
+.layout {
+    display: flex;
+    min-height: 100vh;
 }
 
-.left{
-    width:50%;
-    padding:35px 70px;
+.left {
+    width: 50%;
+    padding: 35px 70px;
+    display: flex;
+    flex-direction: column;
 }
 
-.right{
-    width:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    border-left:1px solid var(--border);
+.right {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Змінено з center, щоб галерея починалася зверху */
+    border-left: 1px solid var(--border);
+    max-height: 100vh;
+    overflow-y: auto; /* Додано скрол, якщо картинок багато */
 }
 
-.author-bar{
-    display:flex;
-    align-items:center;
-    gap:20px;
+/* Кастомний скролбар для правої секції */
+.right::-webkit-scrollbar {
+    width: 8px;
+}
+.right::-webkit-scrollbar-track {
+    background: transparent;
+}
+.right::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+.right::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
-.author{
-    color:var(--green2);
-    font-weight:900;
-    letter-spacing:3px;
-    text-transform:uppercase;
+.author-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
-.author-buttons{
-    display:flex;
-    gap:12px;
+.author {
+    color: var(--green2);
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
-.mini-btn{
-    width:52px;
-    height:52px;
-    border-radius:50%;
-    border:2px solid rgba(255,255,255,.15);
-    background:rgba(255,255,255,.03);
-    backdrop-filter:blur(10px);
-    cursor:pointer;
-    transition:.25s;
+.author-buttons {
+    display: flex;
+    gap: 12px;
 }
 
-.mini-btn:hover{
-    border-color:var(--green);
-    box-shadow:0 0 25px rgba(34,197,94,.4);
-    transform:translateY(-2px);
+.mini-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, .15);
+    background: rgba(255, 255, 255, .03);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: .25s;
 }
 
-.logo{
-    margin-top:50px;
-    font-size:130px;
-    font-weight:900;
-    color:var(--green);
-    text-shadow:0 0 50px rgba(34,197,94,.4);
+.mini-btn:hover {
+    border-color: var(--green);
+    box-shadow: 0 0 25px rgba(34, 197, 94, .4);
+    transform: translateY(-2px);
 }
 
-.install{
-    display:inline-flex;
-    justify-content:center;
-    align-items:center;
-    margin-top:35px;
-    padding:28px 60px;
-    border-radius:28px;
-    text-decoration:none;
-    font-size:48px;
-    font-weight:900;
-    color:#02120a;
-    background:linear-gradient(135deg,var(--green),var(--green2));
-    box-shadow:0 20px 60px rgba(34,197,94,.35);
-    transition:.25s;
+.logo {
+    margin-top: 50px;
+    font-size: 130px;
+    font-weight: 900;
+    color: var(--green);
+    text-shadow: 0 0 50px rgba(34, 197, 94, .4);
 }
 
-.install:hover{
-    transform:translateY(-4px) scale(1.02);
-    box-shadow:0 30px 80px rgba(34,197,94,.45);
+.install {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 35px;
+    padding: 28px 60px;
+    border-radius: 28px;
+    text-decoration: none;
+    font-size: 48px;
+    font-weight: 900;
+    color: #02120a;
+    background: linear-gradient(135deg, var(--green), var(--green2));
+    box-shadow: 0 20px 60px rgba(34, 197, 94, .35);
+    transition: .25s;
+    cursor: grab;
+    user-select: none;
 }
 
-.description{
-    margin-top:25px;
-    color:var(--muted);
-    font-size:20px;
-    line-height:1.8;
+.install:active {
+    cursor: grabbing;
 }
 
-.card{
-    margin-top:35px;
-    padding:28px;
-    border-radius:24px;
-    background:rgba(255,255,255,.04);
-    border:1px solid var(--border);
-    backdrop-filter:blur(20px);
+.install:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 30px 80px rgba(34, 197, 94, .45);
 }
 
-.card h2{
-    margin-bottom:15px;
-    font-size:32px;
+.description {
+    margin-top: 25px;
+    color: var(--muted);
+    font-size: 20px;
+    line-height: 1.8;
 }
 
-.card ul{
-    margin-left:20px;
+/* Додаткові кнопки (Копіювати код, Інструкція) */
+.actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 25px;
 }
 
-.card li{
-    margin-bottom:12px;
-    color:var(--muted);
+.small-btn {
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, .05);
+    color: var(--text);
+    border-radius: 16px;
+    padding: 13px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 16px;
+    transition: .25s;
 }
 
-.gallery{
-    width:90%;
-    column-count:2;
-    column-gap:18px;
-    padding:30px;
+.small-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(34, 197, 94, .1);
+    border-color: var(--green);
 }
 
-.gallery img{
-    width:100%;
-    height:auto;
-    display:block;
-    margin-bottom:18px;
-    border-radius:20px;
-    break-inside:avoid;
-    border:1px solid rgba(255,255,255,.08);
-    box-shadow:0 10px 30px rgba(0,0,0,.3);
-    transition:.3s;
+/* Статус після копіювання */
+.status {
+    margin-top: 16px;
+    min-height: 26px;
+    color: var(--green2);
+    font-weight: 700;
 }
 
-.gallery img:hover{
-    transform:scale(1.03);
-    border-color:var(--green);
-    box-shadow:0 0 35px rgba(34,197,94,.35);
+.card {
+    margin-top: 35px;
+    padding: 28px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(20px);
 }
 
-@media(max-width:1000px){
-    .layout{
-        flex-direction:column;
+.card h2 {
+    margin-bottom: 15px;
+    font-size: 32px;
+}
+
+.card ul {
+    margin-left: 20px;
+}
+
+.card li {
+    margin-bottom: 12px;
+    color: var(--muted);
+}
+
+/* Розкладка галереї (Masonry) */
+.gallery {
+    width: 90%;
+    column-count: 2;
+    column-gap: 18px;
+    padding: 35px 0; /* Відступи зверху та знизу */
+}
+
+.gallery img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 18px;
+    border-radius: 20px;
+    break-inside: avoid;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+    transition: .3s;
+    cursor: pointer;
+}
+
+.gallery img:hover {
+    transform: scale(1.03);
+    border-color: var(--green);
+    box-shadow: 0 0 35px rgba(34, 197, 94, .35);
+}
+
+@media(max-width: 1000px) {
+    .layout {
+        flex-direction: column;
     }
 
     .left,
-    .right{
-        width:100%;
+    .right {
+        width: 100%;
+        border-left: none;
+        max-height: none;
+        overflow-y: visible;
     }
 
-    .left{
-        padding:25px 20px;
+    .left {
+        padding: 25px 20px;
     }
 
-    .logo{
-        font-size:80px;
+    .logo {
+        font-size: 80px;
     }
 
-    .install{
-        font-size:32px;
-        width:100%;
-        padding:22px;
+    .install {
+        font-size: 32px;
+        width: 100%;
+        padding: 22px;
     }
 
-    .gallery{
-        column-count:1;
-        width:100%;
-        padding:20px;
+    .gallery {
+        column-count: 1;
+        width: 100%;
+        padding: 20px;
     }
 }
