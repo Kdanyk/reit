@@ -1,336 +1,10 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>C-RET & REIT+ | Narzędzia</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
-
-    :root {
-      /* Niebieska paleta (Sky Blue) */
-      --bg-dark: #0f172a;
-      --bg-light: #082f49;
-      --surface: rgba(255, 255, 255, 0.04);
-      --surface-hover: rgba(255, 255, 255, 0.08);
-      --border: rgba(56, 189, 248, 0.15);
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #38bdf8;       /* Jasnoniebieski */
-      --accent-dark: #0284c7;  /* Ciemniejszy niebieski dla gradientu */
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: 
-        radial-gradient(circle at top right, rgba(56, 189, 248, 0.15), transparent 40%),
-        radial-gradient(circle at bottom left, rgba(2, 132, 199, 0.15), transparent 40%),
-        linear-gradient(135deg, var(--bg-dark), var(--bg-light));
-      background-attachment: fixed;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      line-height: 1.6;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 50px 20px 20px;
-    }
-
-    .container {
-      max-width: 1000px;
-      width: 100%;
-      flex: 1;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .badge {
-      display: inline-block;
-      background: rgba(56, 189, 248, 0.1);
-      color: var(--accent);
-      padding: 6px 16px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-    }
-
-    h1 {
-      font-size: 46px;
-      font-weight: 900;
-      letter-spacing: -1px;
-      margin-bottom: 12px;
-      text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
-    }
-
-    header p {
-      color: var(--text-muted);
-      font-size: 17px;
-    }
-
-    /* Layout z dwoma kolumnami */
-    .layout-grid {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr; /* Lewa kolumna szersza, prawa węższa */
-      gap: 24px;
-      margin-bottom: 40px;
-    }
-
-    /* Karty */
-    .card {
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 28px;
-    }
-
-    .card h2 {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card p {
-      color: var(--text-muted);
-      font-size: 14px;
-      margin-bottom: 16px;
-    }
-
-    /* Lista cech */
-    .features-list {
-      list-style: none;
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 24px;
-    }
-
-    .features-list li {
-      position: relative;
-      padding-left: 20px;
-      margin-bottom: 8px;
-    }
-
-    .features-list li::before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-weight: bold;
-    }
-
-    /* Przyciski */
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 14px 20px;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 700;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      border: none;
-      margin-bottom: 12px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      color: #fff;
-      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 35px rgba(56, 189, 248, 0.4);
-    }
-
-    .btn-secondary {
-      background: var(--surface);
-      color: var(--accent);
-      border: 1px dashed var(--border);
-    }
-
-    .btn-secondary:hover {
-      background: var(--surface-hover);
-      border-color: var(--accent);
-    }
-
-    #status {
-      font-size: 13px;
-      color: var(--accent);
-      text-align: center;
-      min-height: 20px;
-      font-weight: 500;
-    }
-
-    /* Prawa Kolumna - Changelog (Dziennik zmian) */
-    .changelog-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .changelog-item {
-      position: relative;
-      padding-left: 20px;
-      border-left: 2px solid var(--border);
-    }
-
-    .changelog-item::before {
-      content: '';
-      position: absolute;
-      left: -6px;
-      top: 0;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--bg-dark);
-      border: 2px solid var(--accent);
-    }
-
-    .changelog-version {
-      font-weight: 700;
-      color: var(--accent);
-      font-size: 15px;
-      margin-bottom: 4px;
-      line-height: 1;
-    }
-
-    .changelog-date {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .changelog-notes {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 30px 0;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-style: italic;
-    }
-
-    /* Stopka */
-    footer {
-      text-align: center;
-      padding-top: 40px;
-      padding-bottom: 20px;
-      margin-top: auto;
-    }
-
-    .feedback-btn {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      padding: 8px 18px;
-      border-radius: 99px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .feedback-btn:hover {
-      background: var(--surface-hover);
-      color: var(--text);
-      border-color: var(--text-muted);
-    }
-
-    @media (max-width: 800px) {
-      .layout-grid { grid-template-columns: 1fr; }
-      h1 { font-size: 36px; }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <header>
-      <div class="badge">Narzędzia produktywności</div>
-      <h1>C-RET & REIT+</h1>
-      <p>Skrypty do śledzenia Twojego tempa pracy i ilości paczek.</p>
-    </header>
-
-    <div class="layout-grid">
-      
-      <div class="main-content">
-        
-        <div class="card" style="margin-bottom: 20px;">
-          <h2>⚡ C-RET Minimal (Tampermonkey)</h2>
-          <p>Skrypt działający w tle. Posiada ukryty interfejs, wysuwane panele oraz pauzę tempa.</p>
-          <ul class="features-list">
-            <li>Ukryty widget (przezroczystość w spoczynku)</li>
-            <li>Przycisk przerwy (pauza tempa na 30 min)</li>
-            <li>Skróty: <code>Shift+Z</code> (ustawienia), <code>Shift+X</code> (pokaż)</li>
-          </ul>
-          <button class="btn btn-primary" onclick="copyTampermonkeyCode()">
-            📋 Skopiuj kod do schowka
-          </button>
-          <div id="status" style="margin-bottom: 0;"></div>
-        </div>
-
-        <div class="card">
-          <h2>📦 REIT+ (Wersja klasyczna)</h2>
-          <p>Tradycyjny licznik w formie zakładki. Wystarczy przeciągnąć przycisk na pasek przeglądarki.</p>
-          <ul class="features-list">
-            <li>Instalacja bez dodatkowych rozszerzeń</li>
-            <li>Duży interfejs po prawej stronie ekranu</li>
-          </ul>
-          <a class="btn btn-secondary" href="TUTAJ_WKLEJ_KOD_ZAKLADKI" title="Przeciągnij na pasek zakładek">
-            🔖 Przeciągnij do paska zakładek
-          </a>
-        </div>
-
-      </div>
-
-      <div class="sidebar">
-        <div class="card" style="height: 100%;">
-          <h2>🔄 Dziennik zmian</h2>
-          <p style="margin-bottom: 24px;">Historia aktualizacji skryptów.</p>
-          
-          <div class="changelog-wrapper">
-            <div class="empty-state">
-              Wkrótce pojawią się tutaj informacje o nowych aktualizacjach i poprawkach.
-            </div>
-
-            </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <footer>
+<footer>
     <a href="mailto:twoj@email.com?subject=Feedback:%20C-RET" class="feedback-btn">
       💬 Zostaw opinię / Zgłoś błąd
     </a>
   </footer>
 
-  <script>
-    // TUTAJ WKLEJ SWÓJ KOD DLA TAMPERMONKEY (między znakami ` ` )
-    const TAMPERMONKEY_CODE = `
+  <script type="text/plain" id="tm-code-block">
 // ==UserScript==
 // @name         C-RET Minimal (Tampermonkey)
 // @namespace    http://tampermonkey.net/
@@ -386,7 +60,6 @@
     } else {
       d.setHours(18, 30, 0, 0);
     }
-    // Якщо розрахований час у майбутньому
     if (d.getTime() > Date.now()) {
       d.setDate(d.getDate() - 1);
     }
@@ -496,7 +169,6 @@
     cursor: move;
   `;
 
-  // Додано кнопку ⚙ у верхній правий кут
   widget.innerHTML = `
     <div id="btn-open-settings" style="position: absolute; top: 8px; right: 8px; font-size: 14px; color: #888; cursor: pointer; transition: color 0.2s; z-index: 10;" title="Ustawienia (Ctrl+Z)"
          onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">⚙</div>
@@ -522,7 +194,7 @@
   tablePanel.innerHTML = `<div id="table-content" style="width: 260px; padding: 15px; box-sizing: border-box;"></div>`;
   widgetWrapper.appendChild(tablePanel);
 
-  // 3. Висувні Налаштування (Єдиний стиль)
+  // 3. Висувні Налаштування
   const settingsPanel = document.createElement('div');
   settingsPanel.style = `
     width: 0px; margin-left: 0px; background: rgba(25, 25, 28, 0.95); color: #fff; font-family: ${technoFont};
@@ -594,7 +266,6 @@
     updatePanels();
   }
 
-  // Клік по кнопці налаштувань
   widget.querySelector('#btn-open-settings').addEventListener('click', (e) => {
     e.stopPropagation();
     toggleSettings();
@@ -668,7 +339,6 @@
   // --- Перетягування (Drag) ---
   let isDragging = false, dx = 0, dy = 0;
   widgetWrapper.addEventListener('mousedown', (e) => {
-    // ЗМІНА: додано #btn-open-settings до ігнорованих елементів при перетягуванні
     if (e.target.closest('button, input, #w-hour-row, #table-content, label, #btn-open-settings')) return;
     isDragging = true;
     const rect = widgetWrapper.getBoundingClientRect();
@@ -831,12 +501,16 @@
 
   render();
 })();
-`;
+  </script>
 
+  <script>
     async function copyTampermonkeyCode() {
+      // Отримуємо текст з нашого блоку
+      const tmCode = document.getElementById('tm-code-block').textContent.trim();
       const status = document.getElementById('status');
+      
       try {
-        await navigator.clipboard.writeText(TAMPERMONKEY_CODE);
+        await navigator.clipboard.writeText(tmCode);
         status.textContent = '✅ Skopiowano! Wklej w Tampermonkey (Ctrl+S).';
         setTimeout(() => { status.textContent = ''; }, 5000);
       } catch (e) {
