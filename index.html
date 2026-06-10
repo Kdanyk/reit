@@ -554,4 +554,330 @@
 
       <div style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
         <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #ccc;">Od kiedy liczyć tempo? (Start)</label>
-        <div style="display: flex
+        <div style="display: flex; gap: 5px;">
+          <input id="set-custom-time" type="time" value="${getStartTimeStr()}" style="flex: 1; padding: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: #fff; border-radius: 6px; font-family: ${technoFont}; color-scheme: dark;">
+          <button id="btn-set-time" style="padding: 6px 12px; background: #3daee9; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s;">Ustaw</button>
+        </div>
+      </div>
+
+      <button id="btn-break" style="width: 100%; padding: 8px; background: #f39c12; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px;">☕ Przerwa 30 min (pauza tempa)</button>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button id="btn-minus" style="flex: 1; padding: 8px; background: rgba(255, 77, 77, 0.8); color: white; border: 1px solid rgba(255,77,77,1); border-radius: 6px; cursor: pointer; font-weight: bold;">-1 Sztuka</button>
+        <button id="btn-plus" style="flex: 1; padding: 8px; background: rgba(53, 214, 107, 0.8); color: white; border: 1px solid rgba(53,214,107,1); border-radius: 6px; cursor: pointer; font-weight: bold;">+1 Sztuka</button>
+      </div>
+
+      <button id="btn-reset" style="width: 100%; padding: 8px; background: rgba(217, 83, 79, 0.3); color: #ff6b6b; border: 1px solid #ff6b6b; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 10px;">🔄 Resetuj zmianę</button>
+      <button id="set-close" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; font-family: ${technoFont}; font-weight: bold;">ZAMKNIJ</button>
+    </div>
+  `;
+  widgetWrapper.appendChild(settingsPanel);
+  document.body.appendChild(uiContainer);
+
+  // --- Логіка перемикання панелей (Висування) ---
+  function updatePanels() {
+    tablePanel.style.width = tableOpen ? '280px' : '0px';
+    tablePanel.style.marginLeft = tableOpen ? '10px' : '0px';
+    tablePanel.style.borderWidth = tableOpen ? '1px' : '0px';
+
+    settingsPanel.style.width = settingsOpen ? '270px' : '0px';
+    settingsPanel.style.marginLeft = settingsOpen ? '10px' : '0px';
+    settingsPanel.style.borderWidth = settingsOpen ? '1px' : '0px';
+  }
+
+  function toggleSettings() {
+    settingsOpen = !settingsOpen;
+    if (settingsOpen) {
+      tableOpen = false;
+      settingsPanel.querySelector('#set-custom-time').value = getStartTimeStr();
+    }
+    updatePanels();
+  }
+
+  // Клік по кнопці налаштувань
+  widget.querySelector('#btn-open-settings').addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSettings();
+  });
+
+  widget.querySelector('#w-hour-row').addEventListener('click', (e) => {
+    e.stopPropagation();
+    tableOpen = !tableOpen;
+    if (tableOpen) {
+      settingsOpen = false;
+      renderFullTable();
+    }
+    updatePanels();
+  });
+
+  // --- Логіка відображення таблиці (Tabela) ---
+  function renderFullTable() {
+    let html = `<div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 12px; color: #fff;">Tabela (${shiftName})</div>`;
+    const curSlot = getSlot();
+    let cumulativeTarget = 0;
+
+    hours.forEach(h => {
+      const val = hourCounts[h] || 0;
+      const isCurrent = h === curSlot;
+      cumulativeTarget += targetPerHour;
+      const good = val >= targetPerHour;
+      const pct = Math.min(100, Math.round((val / targetPerHour) * 100));
+      const color = good ? accentColor : '#3daee9';
+      const bg = isCurrent ? 'rgba(255,255,255,0.15)' : 'transparent';
+
+      html += `
+        <div style="background: ${bg}; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; align-items: center;">
+            <span style="color: ${isCurrent ? '#fff' : '#aaa'}; font-weight: ${isCurrent ? 'bold' : 'normal'}">${h}</span>
+            <span>
+              <span style="font-weight: bold; color: #fff;">${val}</span>
+              <span style="color: #888; font-size: 11px;"> / ${targetPerHour} <span style="color:#aaa;">(∑ ${cumulativeTarget})</span></span>
+            </span>
+          </div>
+          <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+            <div style="height: 100%; width: ${pct}%; background: ${color}; border-radius: 2px;"></div>
+          </div>
+        </div>
+      `;
+    });
+
+    tablePanel.querySelector('#table-content').innerHTML = html;
+  }
+
+  // --- Логіка анімації (Hover & Fade out) ---
+  let fadeTimer;
+  let secondaryFadeTimer;
+
+  function startFadeOutSequence() {
+    widgetWrapper.style.opacity = '0.5';
+    secondaryFadeTimer = setTimeout(() => {
+      widgetWrapper.style.opacity = idleOpacity;
+    }, 3000);
+  }
+
+  widgetWrapper.addEventListener('mouseenter', () => {
+    clearTimeout(fadeTimer);
+    clearTimeout(secondaryFadeTimer);
+    widgetWrapper.style.opacity = '1';
+  });
+
+  widgetWrapper.addEventListener('mouseleave', () => {
+    startFadeOutSequence();
+  });
+
+  // --- Перетягування (Drag) ---
+  let isDragging = false, dx = 0, dy = 0;
+  widgetWrapper.addEventListener('mousedown', (e) => {
+    // ЗМІНА: додано #btn-open-settings до ігнорованих елементів при перетягуванні
+    if (e.target.closest('button, input, #w-hour-row, #table-content, label, #btn-open-settings')) return;
+    isDragging = true;
+    const rect = widgetWrapper.getBoundingClientRect();
+    dx = e.clientX - rect.left;
+    dy = e.clientY - rect.top;
+    widgetWrapper.style.transition = 'none';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    widgetWrapper.style.left = (e.clientX - dx) + 'px';
+    widgetWrapper.style.top = (e.clientY - dy) + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      widgetWrapper.style.transition = 'opacity 0.4s ease';
+    }
+  });
+
+  // --- Гарячі клавіші та події налаштувань ---
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      toggleSettings();
+    }
+    if (e.shiftKey && e.key.toLowerCase() === 'x') {
+      e.preventDefault();
+      clearTimeout(fadeTimer);
+      clearTimeout(secondaryFadeTimer);
+      widgetWrapper.style.opacity = '1';
+      fadeTimer = setTimeout(() => { startFadeOutSequence(); }, 5000);
+    }
+  });
+
+  settingsPanel.querySelector('#set-close').onclick = () => {
+    settingsOpen = false;
+    updatePanels();
+  };
+
+  settingsPanel.querySelector('#set-target').oninput = (e) => {
+    targetPerHour = parseInt(e.target.value) || 44;
+    saveState(); render(); if(tableOpen) renderFullTable();
+  };
+
+  settingsPanel.querySelector('#set-percent').onchange = (e) => {
+    showPercentage = e.target.checked;
+    saveState(); render();
+  };
+
+  settingsPanel.querySelector('#set-opacity').oninput = (e) => {
+    idleOpacity = parseFloat(e.target.value);
+    widgetWrapper.style.opacity = idleOpacity;
+    saveState();
+  };
+
+  settingsPanel.querySelector('#set-color').oninput = (e) => {
+    accentColor = e.target.value;
+    saveState(); render(); if(tableOpen) renderFullTable();
+  };
+
+  settingsPanel.querySelector('#btn-set-time').onclick = () => {
+    const timeStr = settingsPanel.querySelector('#set-custom-time').value;
+    if (!timeStr) return;
+    let [h, m] = timeStr.split(':').map(Number);
+    let d = new Date();
+    d.setHours(h, m, 0, 0);
+
+    if (d.getTime() > Date.now()) {
+      d.setDate(d.getDate() - 1);
+    }
+
+    start = d.getTime();
+    saveState();
+    render();
+
+    const btn = settingsPanel.querySelector('#btn-set-time');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '✔';
+    btn.style.background = '#27ae60';
+    setTimeout(() => { btn.innerHTML = oldText; btn.style.background = '#3daee9'; }, 2000);
+  };
+
+  settingsPanel.querySelector('#btn-break').onclick = () => {
+    start += 30 * 60 * 1000;
+    saveState();
+    render();
+
+    const btn = settingsPanel.querySelector('#btn-break');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '✔ Zastosowano (-30m)';
+    btn.style.background = '#27ae60';
+    setTimeout(() => {
+      btn.innerHTML = oldText;
+      btn.style.background = '#f39c12';
+    }, 2000);
+  };
+
+  settingsPanel.querySelector('#btn-plus').onclick = () => addPacks(1);
+  settingsPanel.querySelector('#btn-minus').onclick = () => addPacks(-1);
+
+  settingsPanel.querySelector('#btn-reset').onclick = () => {
+    if(confirm("Czy na pewno chcesz zresetować statystyki zmiany?")) {
+      initCounts();
+      saveState();
+      settingsPanel.querySelector('#set-custom-time').value = getStartTimeStr();
+      render();
+      if (tableOpen) renderFullTable();
+    }
+  };
+
+  // --- Основна логіка Сканування та Рендеру ---
+  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function cnt(txt, what) { return (txt.match(new RegExp(esc(what), 'gi')) || []).length; }
+
+  function render() {
+    calcTotal();
+    const rate = getRate();
+    const curSlot = getSlot();
+    const slotPacks = hourCounts[curSlot] || 0;
+
+    document.getElementById('w-packs').textContent = total;
+
+    if (showPercentage) {
+      const pctRate = targetPerHour > 0 ? (rate / targetPerHour) * 100 : 0;
+      document.getElementById('w-rate').textContent = pctRate.toFixed(0) + '%';
+    } else {
+      document.getElementById('w-rate').textContent = rate.toFixed(2) + '/h';
+    }
+
+    const pct = Math.min(100, Math.round((slotPacks / targetPerHour) * 100));
+    const good = slotPacks >= targetPerHour;
+
+    document.getElementById('w-hour-row').innerHTML = `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: bold; align-items: center;">
+        <span style="color: #ccc;">${curSlot}</span>
+        <span>${slotPacks} <span style="color:#777; font-size: 11px;">/ ${targetPerHour}</span></span>
+      </div>
+      <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+        <div style="height: 100%; width: ${pct}%; background: ${good ? accentColor : '#3daee9'}; border-radius: 4px; transition: width 0.3s, background 0.3s;"></div>
+      </div>
+    `;
+  }
+
+  function scan() {
+    const txt = document.body.innerText || '';
+    const currentMatches = cnt(txt, triggerText);
+    const previousMatches = cnt(seen, triggerText);
+
+    if (currentMatches > previousMatches) {
+      addPacks(currentMatches - previousMatches);
+    }
+    seen = txt;
+  }
+
+  setInterval(scan, 1000);
+  setInterval(render, 1000);
+  window.addEventListener('beforeunload', saveState);
+
+  render();
+})();
+  </script>
+
+  <script>
+    function fallbackCopyTextToClipboard(text) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+      
+      // Ховаємо текстове поле, щоб екран не стрибав
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+      }
+
+      document.body.removeChild(textArea);
+    }
+
+    async function copyTampermonkeyCode() {
+      const tmCode = document.getElementById('tm-code-block').textContent.trim();
+      const status = document.getElementById('status');
+      
+      try {
+        // Пробуємо сучасний метод (якщо файл колись буде на сервері https)
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(tmCode);
+        } else {
+          // Якщо це локальний файл (file://), використовуємо старий метод
+          fallbackCopyTextToClipboard(tmCode);
+        }
+        
+        status.textContent = '✅ Skopiowano! Wklej w Tampermonkey (Ctrl+S).';
+        setTimeout(() => { status.textContent = ''; }, 5000);
+      } catch (e) {
+        status.textContent = '❌ Błąd kopiowania. Zaznacz kod ręcznie.';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>
