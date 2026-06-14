@@ -1,429 +1,883 @@
-javascript:(() => {
-  if (window.scanCounterV24) return;
-  window.scanCounterV24 = true;
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C-RET & REIT+ | Narzędzia</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+    :root {
+      /* Niebieska paleta (Sky Blue) */
+      --bg-dark: #0f172a;
+      --bg-light: #082f49;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-hover: rgba(255, 255, 255, 0.08);
+      --border: rgba(56, 189, 248, 0.15);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;       /* Jasnoniebieski */
+      --accent-dark: #0284c7;  /* Ciemniejszy niebieski dla gradientu */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: 
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.15), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(2, 132, 199, 0.15), transparent 40%),
+        linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 50px 20px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      flex: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      padding: 6px 16px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: 46px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 17px;
+    }
+
+    /* Layout z dwoma kolumnami */
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr; /* Lewa kolumna szersza, prawa węższa */
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    /* Karty */
+    .card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+    }
+
+    .card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Lista cech */
+    .features-list {
+      list-style: none;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .features-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    .features-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* Przyciski */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: none;
+      margin-bottom: 12px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px dashed var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+    }
+
+    #status {
+      font-size: 13px;
+      color: var(--accent);
+      text-align: center;
+      min-height: 20px;
+      font-weight: 500;
+    }
+
+    /* Prawa Kolumna - Changelog */
+    .changelog-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .changelog-item {
+      position: relative;
+      padding-left: 20px;
+      border-left: 2px solid var(--border);
+    }
+
+    .changelog-item::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      border: 2px solid var(--accent);
+    }
+
+    .changelog-version {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 15px;
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+
+    .changelog-date {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .changelog-notes {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 0;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-style: italic;
+    }
+
+    /* Stopka */
+    <footer> {
+      text-align: center;
+      padding-top: 40px;
+      padding-bottom: 20px;
+      margin-top: auto;
+    }
+
+    .feedback-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 8px 18px;
+      border-radius: 99px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .feedback-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    @media (max-width: 800px) {
+      .layout-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge">Narzędzia produktywności</div>
+      <h1>C-RET & REIT+</h1>
+      <p>Skrypty do śledzenia Twojego tempa pracy i ilości paczek.</p>
+    </header>
+
+    <div class="layout-grid">
+      
+      <div class="main-content">
+        
+        <div class="card" style="margin-bottom: 20px;">
+          <h2>⚡ C-RET Minimal (Tampermonkey)</h2>
+          <p>Skrypt działający w tle. Posiada ukryty interfejs, wysuwane panele oraz pauzę tempa.</p>
+          <ul class="features-list">
+            <li>Ukryty widget (przezroczystość w spoczynku)</li>
+            <li>Przycisk przerwy (pauza tempa na 30 min)</li>
+            <li>Skróty: <code>Ctrl+Z</code> (ustawienia), <code>Shift+X</code> (pokaż)</li>
+          </ul>
+          <button class="btn btn-primary" onclick="copyTampermonkeyCode()">
+            📋 Skopiuj kod do schowka
+          </button>
+          <div id="status" style="margin-bottom: 0;"></div>
+        </div>
+
+        <div class="card">
+          <h2>📦 REIT+ (Wersja klasyczna)</h2>
+          <p>Tradycyjny licznik w formie zakładki. Wystarczy przeciągnąć przycisk na pasek przeglądarki.</p>
+          <ul class="features-list">
+            <li>Instalacja bez dodatkowych rozszerzeń</li>
+            <li>Duży interfejs po prawej stronie ekranu</li>
+          </ul>
+          
+          <a class="btn btn-secondary" href="javascript:(()=>{if(window.scanCounterV24)return;window.scanCounterV24=true;document.querySelectorAll('[data-reit-counter]').forEach((el)=>el.remove());const saveKey='scanCounterV24State';const technoFont='Consolas,&quot;Lucida Console&quot;,&quot;Courier New&quot;,monospace';const dayHours=['7:30','8:30','9:30','10:30','11:30','12:30','13:30','14:30','15:30','16:30','17:00'];const nightHours=['19:30','20:30','21:30','22:30','23:30','00:30','1:30','2:30','3:30','4:30','5:00'];const currentHour=new Date().getHours();const night=currentHour>=17||currentHour<5;const hours=night?nightHours:dayHours;const shiftName=night?'night':'day';let total=0;let problemTotal=0;let seen='';let start=Date.now();let lastTrigger='-';let targetPerHour=44;let beforeBreak=0;let open=true;let grace=4*60*1000;let offRemain=30*60*1000;let lastActivityTime=Date.now();let offLastTick=Date.now();let triggerText='Wprowadź pojemnik';let problemText='Zeskanuj - PROBLEM-SOLVE';let nlpText='Zeskanuj nowy NLP';let skipNextPack=false;let showRatePercent=false;let showLeftInsteadTotal=false;let autoStatusColor=false;let manualColor='#ffffff';let miniOpacity=0;let miniSize=24;let hourCounts={};let problemCounts={};let lastSave=0;function initCounts(){hours.forEach((h)=>{if(hourCounts[h]==null)hourCounts[h]=0;if(problemCounts[h]==null)problemCounts[h]=0;});}function loadState(){try{const s=JSON.parse(localStorage.getItem(saveKey)||localStorage.getItem('scanCounterV23State')||'{}');if(s.shift!==shiftName){initCounts();return;}start=Number(s.start)||Date.now();problemTotal=Math.max(0,parseInt(s.problemTotal)||0);beforeBreak=Math.max(0,parseInt(s.beforeBreak)||0);targetPerHour=Math.max(1,parseInt(s.targetPerHour)||44);offRemain=Math.max(0,Number(s.offRemain)||30*60*1000);showRatePercent=!!s.showRatePercent;showLeftInsteadTotal=!!s.showLeftInsteadTotal;autoStatusColor=!!s.autoStatusColor;manualColor=s.manualColor||'#ffffff';miniOpacity=Math.min(100,Math.max(0,s.miniOpacity!==undefined?parseInt(s.miniOpacity):0));miniSize=Math.min(45,Math.max(10,parseInt(s.miniSize)||24));hourCounts={};problemCounts={};hours.forEach((h)=>{hourCounts[h]=Math.max(0,parseInt(s.hourCounts&&s.hourCounts[h])||0);problemCounts[h]=Math.max(0,parseInt(s.problemCounts&&s.problemCounts[h])||0);});lastTrigger=s.lastTrigger||'PRZYWRÓCONO';}catch(_){initCounts();}}function saveState(force){const now=Date.now();if(!force&&now-lastSave<1500)return;lastSave=now;try{localStorage.setItem(saveKey,JSON.stringify({shift:shiftName,savedAt:now,start,problemTotal,beforeBreak,targetPerHour,offRemain,showRatePercent,showLeftInsteadTotal,autoStatusColor,manualColor,miniOpacity,miniSize,hourCounts,problemCounts,lastTrigger,}));}catch(_){}}loadState();initCounts();const box=document.createElement('div');box.setAttribute('data-reit-counter','mini');box.style='position:fixed;bottom:34px;left:300px;background:transparent;color:'+manualColor+';padding:4px 8px;font-size:'+miniSize+'px;font-family:'+technoFont+';z-index:999999;border-radius:12px;opacity:'+miniOpacity/100+';cursor:pointer;user-select:none;font-weight:900;letter-spacing:0;text-shadow: 0px 1px 3px rgba(255,255,255,0.8);';document.body.appendChild(box);const panel=document.createElement('div');panel.setAttribute('data-reit-counter','panel');panel.style='position:fixed;top:58px;bottom:24px;right:20px;background:rgba(248, 250, 252, 0.95);color:#1e293b;padding:14px;border-radius:16px;z-index:999999;font-family:'+technoFont+';width:320px;overflow-y:auto;box-sizing:border-box;backdrop-filter:blur(12px);box-shadow:0 10px 30px -5px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);scrollbar-width:thin;transform:translateX(0);opacity:1;pointer-events:auto;transition:transform .35s cubic-bezier(0.4, 0, 0.2, 1),opacity .35s ease';panel.innerHTML=`<div id=&quot;mainView&quot;><div style=&quot;display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:10px;&quot;><div style=&quot;font-size:18px; font-weight:900; color:#0f172a; letter-spacing:0.5px; text-transform:uppercase;&quot;>REIT+</div><button id=&quot;settingsBtn&quot; title=&quot;Ustawienia&quot; style=&quot;width:30px; height:30px; border:none; border-radius:8px; background:rgba(0,0,0,0.05); color:#0f172a; font-size:16px; cursor:pointer; transition:background 0.2s;&quot;>⚙️</button></div><div style=&quot;display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;&quot;><div style=&quot;background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);&quot;><div style=&quot;font-size:10px; color:#64748b; text-transform:uppercase; margin-bottom:4px; font-weight:700;&quot;>Trigger</div><div id=&quot;lt&quot; style=&quot;font-size:12px; font-weight:700; color:#1e293b; word-break:break-all; line-height:1.2;&quot;>-</div></div><div style=&quot;background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);&quot;><div style=&quot;font-size:10px; color:#64748b; text-transform:uppercase; margin-bottom:4px; font-weight:700;&quot;>Off Task</div><div id=&quot;off&quot; style=&quot;font-size:18px; font-weight:900; color:#16a34a;&quot;>30:00</div></div></div><div style=&quot;display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;&quot;><div style=&quot;background:linear-gradient(135deg, #ef4444, #dc2626); color:white; padding:12px 8px; border-radius:10px; text-align:center; text-transform:uppercase; box-shadow:0 2px 8px rgba(239, 68, 68, 0.25);&quot;><div style=&quot;font-size:10px; font-weight:900; opacity:0.9; margin-bottom:2px;&quot;>Problem</div><div id=&quot;pb&quot; style=&quot;font-size:22px; font-weight:900;&quot;>0</div></div><div style=&quot;background:linear-gradient(135deg, #3b82f6, #2563eb); color:white; padding:12px 8px; border-radius:10px; text-align:center; text-transform:uppercase; box-shadow:0 2px 8px rgba(59, 130, 246, 0.25);&quot;><div style=&quot;font-size:10px; font-weight:900; opacity:0.9; margin-bottom:2px;&quot;>Pozostało</div><div id=&quot;left&quot; style=&quot;font-size:22px; font-weight:900;&quot;>0</div></div></div><div id=&quot;hours&quot; style=&quot;margin-top:8px;&quot;></div></div><div id=&quot;settingsView&quot; style=&quot;display:none&quot;><div style=&quot;display:flex; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:10px;&quot;><button id=&quot;backBtn&quot; title=&quot;Powrót&quot; style=&quot;width:30px; height:30px; border:none; border-radius:8px; background:rgba(0,0,0,0.05); color:#0f172a; font-size:18px; cursor:pointer; margin-right:10px; display:flex; align-items:center; justify-content:center;&quot;>‹</button><div style=&quot;font-size:16px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;&quot;>Ustawienia</div></div><div style=&quot;background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);&quot;><div style=&quot;display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:center; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;&quot;><label>Kolor mini</label><input type=&quot;color&quot; id=&quot;c&quot; value=&quot;${manualColor}&quot; style=&quot;width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; padding:0;&quot;><label>Rozmiar mini</label><input type=&quot;range&quot; id=&quot;s&quot; min=&quot;10&quot; max=&quot;45&quot; value=&quot;${miniSize}&quot; style=&quot;width:100%; accent-color:#3b82f6;&quot;><label>Widoczność</label><input type=&quot;range&quot; id=&quot;o&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;${miniOpacity}&quot; style=&quot;width:100%; accent-color:#3b82f6;&quot;><label>Reit/h cel</label><input type=&quot;text&quot; inputmode=&quot;numeric&quot; id=&quot;target&quot; value=&quot;${targetPerHour}&quot; style=&quot;padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:${technoFont}; font-weight:900; width:100%; box-sizing:border-box; outline:none;&quot;></div></div><div style=&quot;background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);&quot;><label style=&quot;display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;&quot;>Tempo % / h <input id=&quot;ratePercent&quot; type=&quot;checkbox&quot; style=&quot;width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;&quot;></label><label style=&quot;display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;&quot;>Pozostało zamiast sumy <input id=&quot;leftMode&quot; type=&quot;checkbox&quot; style=&quot;width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;&quot;></label><label style=&quot;display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;&quot;>Auto-kolor tempa <input id=&quot;autoColor&quot; type=&quot;checkbox&quot; style=&quot;width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;&quot;></label></div><div style=&quot;background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);&quot;><div style=&quot;font-size:10px; font-weight:900; text-transform:uppercase; margin-bottom:8px; color:#64748b;&quot;>Podgląd mini widgetu</div><div id=&quot;miniPreview&quot; style=&quot;font-size:20px; font-weight:900; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center; color:#1e293b;&quot;>0 | 0.00/h</div></div><button id=&quot;resetOff&quot; style=&quot;width:100%; padding:10px; border:none; border-radius:8px; background:#facc15; color:#1e293b; font-family:${technoFont}; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; box-shadow:0 2px 6px rgba(250, 204, 21, 0.3); transition:background 0.2s;&quot;>Reset Off Task</button></div>`;document.body.appendChild(panel);const mainView=panel.querySelector('#mainView');const settingsView=panel.querySelector('#settingsView');const tableBox=panel.querySelector('#hours');const settingsHost=document.createElement('div');settingsHost.id='settingsOnMain';tableBox.replaceWith(settingsHost);while(settingsView.children.length>1)settingsHost.appendChild(settingsView.children[1]);settingsView.appendChild(tableBox);function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}function cnt(txt,what){return(txt.match(new RegExp(esc(what),'gi'))||[]).length;}function fmt(ms){if(ms<0)ms=0;let s=Math.floor(ms/1000);const m=Math.floor(s/60);s%=60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}function timeNow(){return new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}function minOf(h){const a=h.split(':');return+a[0]*60++a[1];}function getSlot(){const d=new Date();let mins=d.getHours()*60+d.getMinutes();let slots=hours.map(minOf);if(night&&mins<360)mins+=1440;if(night)slots=slots.map((x)=>x<360?x+1440:x);for(let i=0;i<slots.length;i++){if(mins<=slots[i])return hours[i];}return hours[hours.length-1];}function hourlyTotal(){return hours.reduce((s,h)=>s+(parseInt(hourCounts[h])||0),0);}function recalcTotal(){total=hourlyTotal()+(parseInt(beforeBreak)||0);}function currentRate(){const h=(Date.now()-start)/3600000;return h>0?hourlyTotal()/h:0;}function shiftTarget(){return targetPerHour*10;}function markActivity(){lastActivityTime=Date.now();offLastTick=Date.now();}function miniColor(rate){if(!autoStatusColor)return manualColor;const pct=targetPerHour>0?rate/targetPerHour:0;return pct>=1?'#16a34a':pct>=0.85?'#d97706':'#dc2626';}function miniText(){const rate=currentRate();const left=Math.max(0,shiftTarget()-total);const main=showLeftInsteadTotal?String(left):String(total);const r=showRatePercent?(targetPerHour>0?((rate/targetPerHour)*100).toFixed(0):'0')+'%/h':rate.toFixed(2)+'/h';return main+' | '+r;}function applyMini(){const rate=currentRate();box.innerHTML=miniText();box.style.color=miniColor(rate);const p=panel.querySelector('#miniPreview');if(p){p.textContent=miniText();p.style.color=miniColor(rate);}}function addPacks(n){n=parseInt(n)||0;if(n<=0)return;const slot=getSlot();hourCounts[slot]+=n;recalcTotal();lastTrigger='RĘCZNIE +'+n+' '+timeNow();markActivity();saveState(true);render();}function removePack(){const slot=getSlot();if(hourlyTotal()>0){hourCounts[slot]=Math.max(0,hourCounts[slot]-1);recalcTotal();lastTrigger='RĘCZNIE -1 '+timeNow();saveState(true);render();}}function addProblem(n){n=parseInt(n)||0;if(n<=0)return;problemTotal+=n;problemCounts[getSlot()]+=n;lastTrigger='PROBLEM '+timeNow();markActivity();saveState(true);render();}function bindCountInputs(){panel.querySelectorAll('.hc').forEach((inp)=>{inp.oninput=(e)=>{const h=e.target.getAttribute('data-h');hourCounts[h]=Math.max(0,parseInt(e.target.value)||0);recalcTotal();updateTop();saveState();};inp.onblur=(e)=>{const h=e.target.getAttribute('data-h');e.target.value=hourCounts[h]||0;lastTrigger='RĘCZNIE '+timeNow();renderHours(true);saveState(true);render();};});const bb=panel.querySelector('#beforeBreak');if(bb){bb.oninput=(e)=>{beforeBreak=Math.max(0,parseInt(e.target.value)||0);recalcTotal();updateTop();saveState();};bb.onblur=(e)=>{e.target.value=beforeBreak||0;lastTrigger='RĘCZNIE '+timeNow();renderHours(true);saveState(true);render();};}}function renderHours(force){const active=document.activeElement;if(!force&&active&&panel.contains(active)&&(active.classList.contains('hc')||active.id==='beforeBreak'))return;const visibleHours=night?nightHours:dayHours;const max=Math.max(targetPerHour,beforeBreak,...visibleHours.map((h)=>hourCounts[h]||0),1);let rows=visibleHours.map((h)=>{const val=hourCounts[h]||0;const bars=Math.min(100,Math.round((val/max)*100));const good=val>=targetPerHour;return `<div style=&quot;display:grid; grid-template-columns:40px 45px 1fr; gap:10px; align-items:center; background:#ffffff; border:1px solid rgba(0,0,0,0.05); border-radius:8px; padding:6px 10px; margin-bottom:6px; border-left:4px solid ${good?'#22c55e':'#cbd5e1'}; box-shadow:0 1px 2px rgba(0,0,0,0.02);&quot;><b style=&quot;font-size:12px; text-align:left; color:#475569;&quot;>${h}</b><input class=&quot;hc&quot; data-h=&quot;${h}&quot; type=&quot;text&quot; inputmode=&quot;numeric&quot; value=&quot;${val}&quot; style=&quot;width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#f8fafc; color:#1e293b; text-align:center; font-family:${technoFont}; font-weight:900; outline:none; font-size:12px;&quot;><div style=&quot;height:6px; background:#f1f5f9; border-radius:999px; overflow:hidden;&quot;><div style=&quot;height:100%; width:${bars}%; background:${good?'#22c55e':'#3b82f6'}; border-radius:999px; transition:width 0.4s ease;&quot;></div></div></div>`;}).join('');const bbBars=Math.min(100,Math.round((beforeBreak/max)*100));rows+=`<div style=&quot;display:grid; grid-template-columns:85px 45px 1fr; gap:10px; align-items:center; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); border-radius:8px; padding:6px 10px; margin-top:12px; margin-bottom:6px; border-left:4px solid #94a3b8;&quot;><b style=&quot;font-size:11px; text-align:left; color:#475569;&quot;>Przed przerwą</b><input id=&quot;beforeBreak&quot; type=&quot;text&quot; inputmode=&quot;numeric&quot; value=&quot;${beforeBreak}&quot; style=&quot;width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#ffffff; color:#1e293b; text-align:center; font-family:${technoFont}; font-weight:900; outline:none; font-size:12px;&quot;><div style=&quot;height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden;&quot;><div style=&quot;height:100%; width:${bbBars}%; background:#94a3b8; border-radius:999px; transition:width 0.4s ease;&quot;></div></div></div>`;panel.querySelector('#hours').innerHTML=rows;bindCountInputs();}function updateTop(){applyMini();panel.querySelector('#left').textContent=Math.max(0,shiftTarget()-total);}function render(){recalcTotal();const now=Date.now();if(now-lastActivityTime>grace){offRemain-=now-offLastTick;if(offRemain<0)offRemain=0;}offLastTick=now;panel.querySelector('#lt').textContent=lastTrigger;panel.querySelector('#off').textContent=fmt(offRemain);panel.querySelector('#pb').textContent=problemTotal;panel.querySelector('#left').textContent=Math.max(0,shiftTarget()-total);applyMini();renderHours(false);saveState();}function scan(){const txt=document.body.innerText||'';const m=cnt(txt,triggerText);const p=cnt(seen,triggerText);const pm=cnt(txt,problemText);const pp=cnt(seen,problemText);const nlpm=cnt(txt,nlpText);const nlpp=cnt(seen,nlpText);if(nlpm>nlpp){skipNextPack=true;lastTrigger='NLP: POMIŃ NASTĘPNĄ '+timeNow();markActivity();render();}if(pm>pp)addProblem(pm-pp);else if(m>p){let diff=m-p;if(skipNextPack){diff--;skipNextPack=false;lastTrigger='POMINIĘTO PO NLP '+timeNow();}if(diff>0)addPacks(diff);}seen=txt;}function toggleUI(){open=!open;panel.style.transform=open?'translateX(0)':'translateX(350px)';panel.style.opacity=open?'1':'0';panel.style.pointerEvents=open?'auto':'none';}function showSettings(v){panel.querySelector('#mainView').style.display=v?'none':'block';panel.querySelector('#settingsView').style.display=v?'block':'none';applyMini();}setInterval(scan,1000);setInterval(render,1000);window.addEventListener('beforeunload',()=>saveState(true));box.onclick=toggleUI;document.addEventListener('keydown',(e)=>{if(e.altKey&&e.key.toLowerCase()==='l')toggleUI();if(e.altKey&&e.key.toLowerCase()==='p')removePack();if(e.altKey&&e.key.toLowerCase()==='o')addPacks(1);});panel.querySelector('#settingsBtn').onclick=()=>showSettings(true);panel.querySelector('#backBtn').onclick=()=>showSettings(false);panel.querySelector('#ratePercent').checked=showRatePercent;panel.querySelector('#leftMode').checked=showLeftInsteadTotal;panel.querySelector('#autoColor').checked=autoStatusColor;panel.querySelector('#ratePercent').onchange=(e)=>{showRatePercent=e.target.checked;saveState(true);applyMini();};panel.querySelector('#leftMode').onchange=(e)=>{showLeftInsteadTotal=e.target.checked;saveState(true);applyMini();};panel.querySelector('#autoColor').onchange=(e)=>{autoStatusColor=e.target.checked;saveState(true);applyMini();};panel.querySelector('#resetOff').onclick=()=>{offRemain=30*60*1000;lastActivityTime=Date.now();offLastTick=Date.now();saveState(true);render();};panel.querySelector('#c').oninput=(e)=>{manualColor=e.target.value;saveState(true);applyMini();};panel.querySelector('#s').oninput=(e)=>{miniSize=parseInt(e.target.value)||24;box.style.fontSize=miniSize+'px';saveState(true);};panel.querySelector('#o').oninput=(e)=>{miniOpacity=parseInt(e.target.value)||0;box.style.opacity=miniOpacity/100;saveState(true);};panel.querySelector('#target').oninput=(e)=>{targetPerHour=parseInt(e.target.value)||44;saveState(true);render();};render();scan();renderHours(true);applyMini();})();">
+            🔖 Przeciągnij do paska zakładek
+          </a>
+        </div>
+
+      </div>
+
+      <div class="sidebar">
+        <div class="card" style="height: 100%;">
+          <h2>🔄 Dziennik zmian</h2>
+          <p style="margin-bottom: 24px;">Historia aktualizacji skryptów.</p>
+          
+          <div class="changelog-wrapper">
+            <div class="changelog-item">
+              <div class="changelog-version">v6.2 Minimal</div>
+              <div class="changelog-date">Ostatnia aktualizacja</div>
+              <div class="changelog-notes">Dodano ikonkę ustawień, spójny styl paneli (Dark Mode) oraz poprawiono liczenie od wybranej godziny. Zmieniono skrót na Ctrl+Z.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <a href="mailto:twoj@email.com?subject=Feedback:%20C-RET" class="feedback-btn">
+      💬 Zostaw opinię / Zgłoś błąd
+    </a>
+  </footer>
+
+  <script type="text/plain" id="tm-code-block">
+// ==UserScript==
+// @name         C-RET Minimal (Tampermonkey)
+// @namespace    http://tampermonkey.net/
+// @version      6.2
+// @description  Без заголовка, єдиний темний стиль, таблиця з накопиченням цілей, кастомний старт, Ctrl+Z + кнопка налаштувань
+// @author       You
+// @include      *
+// @match        *://*/*
+// @grant        none
+// ==/UserScript==
+
+(() => {
+  'use strict';
+
+  if (window.cRetMinimalV6_2) return;
+  window.cRetMinimalV6_2 = true;
   document.querySelectorAll('[data-reit-counter]').forEach((el) => el.remove());
 
-  const saveKey = 'scanCounterV24State';
+  const saveKey = 'cRetMinimalStateV6_2';
   const technoFont = 'Consolas,"Lucida Console","Courier New",monospace';
-  const dayHours = ['7:30', '8:30', '9:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30', '17:00'];
-  const nightHours = ['19:30', '20:30', '21:30', '22:30', '23:30', '00:30', '1:30', '2:30', '3:30', '4:30', '5:00'];
+
+  // Години роботи
+  const dayHours = ['6:30', '7:30', '8:30', '9:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30'];
+  const nightHours = ['18:30', '19:30', '20:30', '21:30', '22:30', '23:30', '0:30', '1:30', '2:30', '3:30', '4:30'];
+
   const currentHour = new Date().getHours();
-  const night = currentHour >= 17 || currentHour < 5;
+  const night = currentHour >= 17 || currentHour < 6;
   const hours = night ? nightHours : dayHours;
   const shiftName = night ? 'night' : 'day';
 
   let total = 0;
-  let problemTotal = 0;
   let seen = '';
   let start = Date.now();
-  let lastTrigger = '-';
-  let targetPerHour = 44;
-  let beforeBreak = 0;
-  let open = true;
-  let grace = 4 * 60 * 1000;
-  let offRemain = 30 * 60 * 1000;
-  let lastActivityTime = Date.now();
-  let offLastTick = Date.now();
-  let triggerText = 'Wprowadź pojemnik';
-  let problemText = 'Zeskanuj - PROBLEM-SOLVE';
-  let nlpText = 'Zeskanuj nowy NLP';
-  let skipNextPack = false;
-  let showRatePercent = false;
-  let showLeftInsteadTotal = false;
-  let autoStatusColor = false;
-  let manualColor = '#1e293b';
-  let miniOpacity = 100;
-  let miniSize = 24;
   let hourCounts = {};
-  let problemCounts = {};
-  let lastSave = 0;
+
+  // Налаштування користувача
+  let targetPerHour = 44;
+  let showPercentage = false;
+  let idleOpacity = 0.01;
+  let accentColor = '#35d66b';
+
+  const triggerText = 'Przedmiot jest kompletny';
+
+  // Статуси панелей
+  let tableOpen = false;
+  let settingsOpen = false;
+
+  // --- Ініціалізація та Збереження ---
+  function getDefaultShiftStart() {
+    let d = new Date();
+    if (shiftName === 'day') {
+      d.setHours(6, 30, 0, 0);
+    } else {
+      d.setHours(18, 30, 0, 0);
+    }
+    // Якщо розрахований час у майбутньому
+    if (d.getTime() > Date.now()) {
+      d.setDate(d.getDate() - 1);
+    }
+    return d.getTime();
+  }
 
   function initCounts() {
-    hours.forEach((h) => {
-      if (hourCounts[h] == null) hourCounts[h] = 0;
-      if (problemCounts[h] == null) problemCounts[h] = 0;
-    });
+    hours.forEach((h) => { hourCounts[h] = 0; });
+    start = getDefaultShiftStart();
+    total = 0;
   }
 
   function loadState() {
     try {
-      const s = JSON.parse(localStorage.getItem(saveKey) || localStorage.getItem('scanCounterV23State') || '{}');
+      const s = JSON.parse(localStorage.getItem(saveKey) || '{}');
       if (s.shift !== shiftName) {
         initCounts();
         return;
       }
-      start = Number(s.start) || Date.now();
-      problemTotal = Math.max(0, parseInt(s.problemTotal) || 0);
-      beforeBreak = Math.max(0, parseInt(s.beforeBreak) || 0);
+      start = Number(s.start) || getDefaultShiftStart();
       targetPerHour = Math.max(1, parseInt(s.targetPerHour) || 44);
-      offRemain = Math.max(0, Number(s.offRemain) || 30 * 60 * 1000);
-      showRatePercent = !!s.showRatePercent;
-      showLeftInsteadTotal = !!s.showLeftInsteadTotal;
-      autoStatusColor = !!s.autoStatusColor;
-      manualColor = s.manualColor || '#1e293b';
-      miniOpacity = Math.min(100, Math.max(10, parseInt(s.miniOpacity) || 100));
-      miniSize = Math.min(45, Math.max(10, parseInt(s.miniSize) || 24));
+      showPercentage = !!s.showPercentage;
+      idleOpacity = s.idleOpacity !== undefined ? parseFloat(s.idleOpacity) : 0.01;
+      accentColor = s.accentColor || '#35d66b';
+
       hourCounts = {};
-      problemCounts = {};
       hours.forEach((h) => {
         hourCounts[h] = Math.max(0, parseInt(s.hourCounts && s.hourCounts[h]) || 0);
-        problemCounts[h] = Math.max(0, parseInt(s.problemCounts && s.problemCounts[h]) || 0);
       });
-      lastTrigger = s.lastTrigger || 'PRZYWRÓCONO';
     } catch (_) {
       initCounts();
     }
   }
 
-  function saveState(force) {
-    const now = Date.now();
-    if (!force && now - lastSave < 1500) return;
-    lastSave = now;
-    try {
-      localStorage.setItem(saveKey, JSON.stringify({
-        shift: shiftName, savedAt: now, start, problemTotal, beforeBreak, targetPerHour,
-        offRemain, showRatePercent, showLeftInsteadTotal, autoStatusColor, manualColor,
-        miniOpacity, miniSize, hourCounts, problemCounts, lastTrigger,
-      }));
-    } catch (_) {}
+  function saveState() {
+    localStorage.setItem(saveKey, JSON.stringify({
+      shift: shiftName,
+      start,
+      targetPerHour,
+      showPercentage,
+      idleOpacity,
+      accentColor,
+      hourCounts
+    }));
   }
 
   loadState();
-  initCounts();
 
-  const box = document.createElement('div');
-  box.setAttribute('data-reit-counter', 'mini');
-  box.style = 'position:fixed;bottom:34px;left:300px;background:transparent;color:' + manualColor + ';padding:4px 8px;font-size:' + miniSize + 'px;font-family:' + technoFont + ';z-index:999999;border-radius:12px;opacity:' + miniOpacity / 100 + ';cursor:pointer;user-select:none;font-weight:900;letter-spacing:0;text-shadow: 0px 1px 3px rgba(255,255,255,0.8);';
-  document.body.appendChild(box);
+  function getStartTimeStr() {
+    let d = new Date(start);
+    if (isNaN(d.getTime())) return '00:00';
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
 
-  const panel = document.createElement('div');
-  panel.setAttribute('data-reit-counter', 'panel');
-  panel.style = 'position:fixed;top:58px;bottom:24px;right:20px;background:rgba(248, 250, 252, 0.95);color:#1e293b;padding:14px;border-radius:16px;z-index:999999;font-family:' + technoFont + ';width:320px;overflow-y:auto;box-sizing:border-box;backdrop-filter:blur(12px);box-shadow:0 10px 30px -5px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);scrollbar-width:thin;transform:translateX(0);opacity:1;pointer-events:auto;transition:transform .35s cubic-bezier(0.4, 0, 0.2, 1),opacity .35s ease';
-  
-  panel.innerHTML = `
-  <div id="mainView">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:10px;">
-      <div style="font-size:18px; font-weight:900; color:#0f172a; letter-spacing:0.5px; text-transform:uppercase;">REIT+</div>
-      <button id="settingsBtn" title="Ustawienia" style="width:30px; height:30px; border:none; border-radius:8px; background:rgba(0,0,0,0.05); color:#0f172a; font-size:16px; cursor:pointer; transition:background 0.2s;">⚙️</button>
-    </div>
-    
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
-      <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-        <div style="font-size:10px; color:#64748b; text-transform:uppercase; margin-bottom:4px; font-weight:700;">Trigger</div>
-        <div id="lt" style="font-size:12px; font-weight:700; color:#1e293b; word-break:break-all; line-height:1.2;">-</div>
-      </div>
-      <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-        <div style="font-size:10px; color:#64748b; text-transform:uppercase; margin-bottom:4px; font-weight:700;">Off Task</div>
-        <div id="off" style="font-size:18px; font-weight:900; color:#16a34a;">30:00</div>
-      </div>
-    </div>
-    
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-      <div style="background:linear-gradient(135deg, #ef4444, #dc2626); color:white; padding:12px 8px; border-radius:10px; text-align:center; text-transform:uppercase; box-shadow:0 2px 8px rgba(239, 68, 68, 0.25);">
-        <div style="font-size:10px; font-weight:900; opacity:0.9; margin-bottom:2px;">Problem</div>
-        <div id="pb" style="font-size:22px; font-weight:900;">0</div>
-      </div>
-      <div style="background:linear-gradient(135deg, #3b82f6, #2563eb); color:white; padding:12px 8px; border-radius:10px; text-align:center; text-transform:uppercase; box-shadow:0 2px 8px rgba(59, 130, 246, 0.25);">
-        <div style="font-size:10px; font-weight:900; opacity:0.9; margin-bottom:2px;">Pozostało</div>
-        <div id="left" style="font-size:22px; font-weight:900;">0</div>
-      </div>
-    </div>
-    
-    <div id="hours" style="margin-top:8px;"></div>
-  </div>
-  
-  <div id="settingsView" style="display:none">
-    <div style="display:flex; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:10px;">
-      <button id="backBtn" title="Powrót" style="width:30px; height:30px; border:none; border-radius:8px; background:rgba(0,0,0,0.05); color:#0f172a; font-size:18px; cursor:pointer; margin-right:10px; display:flex; align-items:center; justify-content:center;">‹</button>
-      <div style="font-size:16px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;">Ustawienia</div>
-    </div>
-    
-    <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-      <div style="display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:center; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;">
-        <label>Kolor mini</label>
-        <input type="color" id="c" value="${manualColor}" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; padding:0;">
-        <label>Rozmiar mini</label>
-        <input type="range" id="s" min="10" max="45" value="${miniSize}" style="width:100%; accent-color:#3b82f6;">
-        <label>Widoczność</label>
-        <input type="range" id="o" min="10" max="100" value="${miniOpacity}" style="width:100%; accent-color:#3b82f6;">
-        <label>Reit/h cel</label>
-        <input type="text" inputmode="numeric" id="target" value="${targetPerHour}" style="padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:${technoFont}; font-weight:900; width:100%; box-sizing:border-box; outline:none;">
-      </div>
-    </div>
-    
-    <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-      <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;">Tempo % / h <input id="ratePercent" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;"></label>
-      <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;">Pozostało zamiast sumy <input id="leftMode" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;"></label>
-      <label style="display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;">Auto-kolor tempa <input id="autoColor" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;"></label>
-    </div>
-    
-    <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-      <div style="font-size:10px; font-weight:900; text-transform:uppercase; margin-bottom:8px; color:#64748b;">Podgląd mini widgetu</div>
-      <div id="miniPreview" style="font-size:20px; font-weight:900; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center; color:#1e293b;">0 | 0.00/h</div>
-    </div>
-    
-    <button id="resetOff" style="width:100%; padding:10px; border:none; border-radius:8px; background:#facc15; color:#1e293b; font-family:${technoFont}; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; box-shadow:0 2px 6px rgba(250, 204, 21, 0.3); transition:background 0.2s;">Reset Off Task</button>
-  </div>`;
-  
-  document.body.appendChild(panel);
-  const mainView = panel.querySelector('#mainView');
-  const settingsView = panel.querySelector('#settingsView');
-  const tableBox = panel.querySelector('#hours');
-  const settingsHost = document.createElement('div');
-  settingsHost.id = 'settingsOnMain';
-  tableBox.replaceWith(settingsHost);
-  
-  while (settingsView.children.length > 1) settingsHost.appendChild(settingsView.children[1]);
-  settingsView.appendChild(tableBox);
-  
-  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  function cnt(txt, what) { return (txt.match(new RegExp(esc(what), 'gi')) || []).length; }
-  function fmt(ms) {
-    if (ms < 0) ms = 0;
-    let s = Math.floor(ms / 1000);
-    const m = Math.floor(s / 60);
-    s %= 60;
-    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-  }
-  function timeNow() {
-    return new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  }
-  function minOf(h) {
-    const a = h.split(':');
-    return +a[0] * 60 + +a[1];
-  }
+  // --- Обчислення ---
   function getSlot() {
     const d = new Date();
     let mins = d.getHours() * 60 + d.getMinutes();
-    let slots = hours.map(minOf);
+    let slots = hours.map(h => {
+      let a = h.split(':');
+      return +a[0] * 60 + +a[1];
+    });
     if (night && mins < 360) mins += 1440;
-    if (night) slots = slots.map((x) => x < 360 ? x + 1440 : x);
+    if (night) slots = slots.map(x => x < 360 ? x + 1440 : x);
     for (let i = 0; i < slots.length; i++) {
       if (mins <= slots[i]) return hours[i];
     }
     return hours[hours.length - 1];
   }
-  function hourlyTotal() {
-    return hours.reduce((s, h) => s + (parseInt(hourCounts[h]) || 0), 0);
+
+  function calcTotal() {
+    total = hours.reduce((acc, h) => acc + (hourCounts[h] || 0), 0);
   }
-  function recalcTotal() {
-    total = hourlyTotal() + (parseInt(beforeBreak) || 0);
+
+  function getRate() {
+    const h = Math.max(0, (Date.now() - start) / 3600000);
+    return h > 0 ? (total / h) : 0;
   }
-  function currentRate() {
-    const h = (Date.now() - start) / 3600000;
-    return h > 0 ? hourlyTotal() / h : 0;
-  }
-  function shiftTarget() {
-    return targetPerHour * 10;
-  }
-  function markActivity() {
-    lastActivityTime = Date.now();
-    offLastTick = Date.now();
-  }
-  function miniColor(rate) {
-    if (!autoStatusColor) return manualColor;
-    const pct = targetPerHour > 0 ? rate / targetPerHour : 0;
-    return pct >= 1 ? '#16a34a' : pct >= 0.85 ? '#d97706' : '#dc2626';
-  }
-  function miniText() {
-    const rate = currentRate();
-    const left = Math.max(0, shiftTarget() - total);
-    const main = showLeftInsteadTotal ? String(left) : String(total);
-    const r = showRatePercent ? (targetPerHour > 0 ? ((rate / targetPerHour) * 100).toFixed(0) : '0') + '%/h' : rate.toFixed(2) + '/h';
-    return main + ' | ' + r;
-  }
-  function applyMini() {
-    const rate = currentRate();
-    box.innerHTML = miniText();
-    box.style.color = miniColor(rate);
-    const p = panel.querySelector('#miniPreview');
-    if (p) {
-      p.textContent = miniText();
-      p.style.color = miniColor(rate);
-    }
-  }
+
   function addPacks(n) {
-    n = parseInt(n) || 0;
-    if (n <= 0) return;
+    if (n === 0) return;
     const slot = getSlot();
-    hourCounts[slot] += n;
-    recalcTotal();
-    lastTrigger = 'RĘCZNIE +' + n + ' ' + timeNow();
-    markActivity();
-    saveState(true);
-    render();
-  }
-  function removePack() {
-    const slot = getSlot();
-    if (hourlyTotal() > 0) {
-      hourCounts[slot] = Math.max(0, hourCounts[slot] - 1);
-      recalcTotal();
-      lastTrigger = 'RĘCZNIE -1 ' + timeNow();
-      saveState(true);
-      render();
-    }
-  }
-  function addProblem(n) {
-    n = parseInt(n) || 0;
-    if (n <= 0) return;
-    problemTotal += n;
-    problemCounts[getSlot()] += n;
-    lastTrigger = 'PROBLEM ' + timeNow();
-    markActivity();
-    saveState(true);
-    render();
-  }
-  function bindCountInputs() {
-    panel.querySelectorAll('.hc').forEach((inp) => {
-      inp.oninput = (e) => {
-        const h = e.target.getAttribute('data-h');
-        hourCounts[h] = Math.max(0, parseInt(e.target.value) || 0);
-        recalcTotal();
-        updateTop();
-        saveState();
-      };
-      inp.onblur = (e) => {
-        const h = e.target.getAttribute('data-h');
-        e.target.value = hourCounts[h] || 0;
-        lastTrigger = 'RĘCZNIE ' + timeNow();
-        renderHours(true);
-        saveState(true);
-        render();
-      };
-    });
-    const bb = panel.querySelector('#beforeBreak');
-    if (bb) {
-      bb.oninput = (e) => {
-        beforeBreak = Math.max(0, parseInt(e.target.value) || 0);
-        recalcTotal();
-        updateTop();
-        saveState();
-      };
-      bb.onblur = (e) => {
-        e.target.value = beforeBreak || 0;
-        lastTrigger = 'RĘCZNIE ' + timeNow();
-        renderHours(true);
-        saveState(true);
-        render();
-      };
-    }
-  }
-  function renderHours(force) {
-    const active = document.activeElement;
-    if (!force && active && panel.contains(active) && (active.classList.contains('hc') || active.id === 'beforeBreak')) return;
-    
-    const visibleHours = night ? nightHours : dayHours;
-    const max = Math.max(targetPerHour, beforeBreak, ...visibleHours.map((h) => hourCounts[h] || 0), 1);
-    
-    let rows = visibleHours.map((h) => {
-      const val = hourCounts[h] || 0;
-      const bars = Math.min(100, Math.round((val / max) * 100));
-      const good = val >= targetPerHour;
-      
-      return `<div style="display:grid; grid-template-columns:40px 45px 1fr; gap:10px; align-items:center; background:#ffffff; border:1px solid rgba(0,0,0,0.05); border-radius:8px; padding:6px 10px; margin-bottom:6px; border-left:4px solid ${good ? '#22c55e' : '#cbd5e1'}; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
-        <b style="font-size:12px; text-align:left; color:#475569;">${h}</b>
-        <input class="hc" data-h="${h}" type="text" inputmode="numeric" value="${val}" style="width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#f8fafc; color:#1e293b; text-align:center; font-family:${technoFont}; font-weight:900; outline:none; font-size:12px;">
-        <div style="height:6px; background:#f1f5f9; border-radius:999px; overflow:hidden;">
-          <div style="height:100%; width:${bars}%; background:${good ? '#22c55e' : '#3b82f6'}; border-radius:999px; transition:width 0.4s ease;"></div>
-        </div>
-      </div>`;
-    }).join('');
-    
-    const bbBars = Math.min(100, Math.round((beforeBreak / max) * 100));
-    rows += `<div style="display:grid; grid-template-columns:85px 45px 1fr; gap:10px; align-items:center; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); border-radius:8px; padding:6px 10px; margin-top:12px; margin-bottom:6px; border-left:4px solid #94a3b8;">
-      <b style="font-size:11px; text-align:left; color:#475569;">Przed przerwą</b>
-      <input id="beforeBreak" type="text" inputmode="numeric" value="${beforeBreak}" style="width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#ffffff; color:#1e293b; text-align:center; font-family:${technoFont}; font-weight:900; outline:none; font-size:12px;">
-      <div style="height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
-        <div style="height:100%; width:${bbBars}%; background:#94a3b8; border-radius:999px; transition:width 0.4s ease;"></div>
-      </div>
-    </div>`;
-    
-    panel.querySelector('#hours').innerHTML = rows;
-    bindCountInputs();
-  }
-  function updateTop() {
-    applyMini();
-    panel.querySelector('#left').textContent = Math.max(0, shiftTarget() - total);
-  }
-  function render() {
-    recalcTotal();
-    const now = Date.now();
-    if (now - lastActivityTime > grace) {
-      offRemain -= now - offLastTick;
-      if (offRemain < 0) offRemain = 0;
-    }
-    offLastTick = now;
-    panel.querySelector('#lt').textContent = lastTrigger;
-    panel.querySelector('#off').textContent = fmt(offRemain);
-    panel.querySelector('#pb').textContent = problemTotal;
-    panel.querySelector('#left').textContent = Math.max(0, shiftTarget() - total);
-    applyMini();
-    renderHours(false);
+    hourCounts[slot] = Math.max(0, (hourCounts[slot] || 0) + n);
+    calcTotal();
     saveState();
+    render();
+    if (tableOpen) renderFullTable();
   }
+
+  // --- Створення UI ---
+  const uiContainer = document.createElement('div');
+  uiContainer.setAttribute('data-reit-counter', 'true');
+
+  const widgetWrapper = document.createElement('div');
+  widgetWrapper.style = `
+    position: fixed; left: 20px; top: 30%; display: flex; flex-direction: row; align-items: flex-start;
+    z-index: 999999; opacity: ${idleOpacity}; transition: opacity 0.4s ease; pointer-events: auto;
+  `;
+  uiContainer.appendChild(widgetWrapper);
+
+  // 1. Основне Міні-вікно
+  const widget = document.createElement('div');
+  widget.style = `
+    position: relative; width: 170px; min-height: 120px; background: rgba(25, 25, 28, 0.95); color: #fff;
+    font-family: ${technoFont}; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
+    cursor: move;
+  `;
+
+  // Додано кнопку ⚙ у верхній правий кут
+  widget.innerHTML = `
+    <div id="btn-open-settings" style="position: absolute; top: 8px; right: 8px; font-size: 14px; color: #888; cursor: pointer; transition: color 0.2s; z-index: 10;" title="Ustawienia (Ctrl+Z)"
+         onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">⚙</div>
+    <div style="padding: 15px 12px 12px 12px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
+      <div id="w-packs" style="font-size: 44px; font-weight: 900; text-align: center; line-height: 1; margin-top: 5px;">0</div>
+      <div id="w-rate" style="font-size: 22px; font-weight: bold; text-align: center; color: #ffd166;">0.00</div>
+      <div style="flex-grow: 1;"></div>
+      <div style="height: 1px; background: rgba(255,255,255,0.2); margin: 6px 0;"></div>
+      <div id="w-hour-row" style="font-size: 13px; cursor: pointer; padding: 4px; border-radius: 6px; transition: background 0.2s;"
+           onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+           onmouseout="this.style.background='transparent'"></div>
+    </div>
+  `;
+  widgetWrapper.appendChild(widget);
+
+  // 2. Висувна Таблиця (Справа)
+  const tablePanel = document.createElement('div');
+  tablePanel.style = `
+    width: 0px; margin-left: 0px; background: rgba(25, 25, 28, 0.95); color: #fff; font-family: ${technoFont};
+    border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden;
+    transition: all 0.3s ease; border: 0px solid rgba(255,255,255,0.1);
+  `;
+  tablePanel.innerHTML = `<div id="table-content" style="width: 260px; padding: 15px; box-sizing: border-box;"></div>`;
+  widgetWrapper.appendChild(tablePanel);
+
+  // 3. Висувні Налаштування (Єдиний стиль)
+  const settingsPanel = document.createElement('div');
+  settingsPanel.style = `
+    width: 0px; margin-left: 0px; background: rgba(25, 25, 28, 0.95); color: #fff; font-family: ${technoFont};
+    border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden;
+    transition: all 0.3s ease; border: 0px solid rgba(255,255,255,0.1);
+  `;
+  settingsPanel.innerHTML = `
+    <div style="width: 270px; padding: 15px; box-sizing: border-box;">
+      <div style="font-size: 16px; font-weight: 900; margin-bottom: 12px; text-align: center; color: #fff;">USTAWIENIA</div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 3px; color: #ccc;">Cel (szt/h)</label>
+          <input id="set-target" type="number" value="${targetPerHour}" style="width: 100%; padding: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: #fff; border-radius: 6px; box-sizing: border-box; font-family: ${technoFont}; font-weight: bold;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 3px; color: #ccc;">Kolor sukcesu</label>
+          <input id="set-color" type="color" value="${accentColor}" style="width: 100%; height: 28px; border: none; border-radius: 6px; cursor: pointer; padding: 0; background: transparent;">
+        </div>
+      </div>
+
+      <label style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: bold; margin-bottom: 12px; cursor: pointer; color: #ccc;">
+        Pokaż tempo w %
+        <input id="set-percent" type="checkbox" style="width: 16px; height: 16px;" ${showPercentage ? 'checked' : ''}>
+      </label>
+
+      <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #ccc;">Przezroczystość w spoczynku</label>
+      <input id="set-opacity" type="range" min="0.01" max="0.8" step="0.05" value="${idleOpacity}" style="width: 100%; margin-bottom: 15px;">
+
+      <div style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+        <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #ccc;">Od kiedy liczyć tempo? (Start)</label>
+        <div style="display: flex; gap: 5px;">
+          <input id="set-custom-time" type="time" value="${getStartTimeStr()}" style="flex: 1; padding: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: #fff; border-radius: 6px; font-family: ${technoFont}; color-scheme: dark;">
+          <button id="btn-set-time" style="padding: 6px 12px; background: #3daee9; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s;">Ustaw</button>
+        </div>
+      </div>
+
+      <button id="btn-break" style="width: 100%; padding: 8px; background: #f39c12; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px;">☕ Przerwa 30 min (pauza tempa)</button>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button id="btn-minus" style="flex: 1; padding: 8px; background: rgba(255, 77, 77, 0.8); color: white; border: 1px solid rgba(255,77,77,1); border-radius: 6px; cursor: pointer; font-weight: bold;">-1 Sztuka</button>
+        <button id="btn-plus" style="flex: 1; padding: 8px; background: rgba(53, 214, 107, 0.8); color: white; border: 1px solid rgba(53,214,107,1); border-radius: 6px; cursor: pointer; font-weight: bold;">+1 Sztuka</button>
+      </div>
+
+      <button id="btn-reset" style="width: 100%; padding: 8px; background: rgba(217, 83, 79, 0.3); color: #ff6b6b; border: 1px solid #ff6b6b; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 10px;">🔄 Resetuj zmianę</button>
+      <button id="set-close" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; font-family: ${technoFont}; font-weight: bold;">ZAMKNIJ</button>
+    </div>
+  `;
+  widgetWrapper.appendChild(settingsPanel);
+  document.body.appendChild(uiContainer);
+
+  // --- Логіка перемикання панелей (Висування) ---
+  function updatePanels() {
+    tablePanel.style.width = tableOpen ? '280px' : '0px';
+    tablePanel.style.marginLeft = tableOpen ? '10px' : '0px';
+    tablePanel.style.borderWidth = tableOpen ? '1px' : '0px';
+
+    settingsPanel.style.width = settingsOpen ? '270px' : '0px';
+    settingsPanel.style.marginLeft = settingsOpen ? '10px' : '0px';
+    settingsPanel.style.borderWidth = settingsOpen ? '1px' : '0px';
+  }
+
+  function toggleSettings() {
+    settingsOpen = !settingsOpen;
+    if (settingsOpen) {
+      tableOpen = false;
+      settingsPanel.querySelector('#set-custom-time').value = getStartTimeStr();
+    }
+    updatePanels();
+  }
+
+  // Клік по кнопці налаштувань
+  widget.querySelector('#btn-open-settings').addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSettings();
+  });
+
+  widget.querySelector('#w-hour-row').addEventListener('click', (e) => {
+    e.stopPropagation();
+    tableOpen = !tableOpen;
+    if (tableOpen) {
+      settingsOpen = false;
+      renderFullTable();
+    }
+    updatePanels();
+  });
+
+  // --- Логіка відображення таблиці (Tabela) ---
+  function renderFullTable() {
+    let html = `<div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 12px; color: #fff;">Tabela (${shiftName})</div>`;
+    const curSlot = getSlot();
+    let cumulativeTarget = 0;
+
+    hours.forEach(h => {
+      const val = hourCounts[h] || 0;
+      const isCurrent = h === curSlot;
+      cumulativeTarget += targetPerHour;
+      const good = val >= targetPerHour;
+      const pct = Math.min(100, Math.round((val / targetPerHour) * 100));
+      const color = good ? accentColor : '#3daee9';
+      const bg = isCurrent ? 'rgba(255,255,255,0.15)' : 'transparent';
+
+      html += `
+        <div style="background: ${bg}; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; align-items: center;">
+            <span style="color: ${isCurrent ? '#fff' : '#aaa'}; font-weight: ${isCurrent ? 'bold' : 'normal'}">${h}</span>
+            <span>
+              <span style="font-weight: bold; color: #fff;">${val}</span>
+              <span style="color: #888; font-size: 11px;"> / ${targetPerHour} <span style="color:#aaa;">(∑ ${cumulativeTarget})</span></span>
+            </span>
+          </div>
+          <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+            <div style="height: 100%; width: ${pct}%; background: ${color}; border-radius: 2px;"></div>
+          </div>
+        </div>
+      `;
+    });
+
+    tablePanel.querySelector('#table-content').innerHTML = html;
+  }
+
+  // --- Логіка анімації (Hover & Fade out) ---
+  let fadeTimer;
+  let secondaryFadeTimer;
+
+  function startFadeOutSequence() {
+    widgetWrapper.style.opacity = '0.5';
+    secondaryFadeTimer = setTimeout(() => {
+      widgetWrapper.style.opacity = idleOpacity;
+    }, 3000);
+  }
+
+  widgetWrapper.addEventListener('mouseenter', () => {
+    clearTimeout(fadeTimer);
+    clearTimeout(secondaryFadeTimer);
+    widgetWrapper.style.opacity = '1';
+  });
+
+  widgetWrapper.addEventListener('mouseleave', () => {
+    startFadeOutSequence();
+  });
+
+  // --- Перетягування (Drag) ---
+  let isDragging = false, dx = 0, dy = 0;
+  widgetWrapper.addEventListener('mousedown', (e) => {
+    // ЗМІНА: додано #btn-open-settings до ігнорованих елементів при перетягуванні
+    if (e.target.closest('button, input, #w-hour-row, #table-content, label, #btn-open-settings')) return;
+    isDragging = true;
+    const rect = widgetWrapper.getBoundingClientRect();
+    dx = e.clientX - rect.left;
+    dy = e.clientY - rect.top;
+    widgetWrapper.style.transition = 'none';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    widgetWrapper.style.left = (e.clientX - dx) + 'px';
+    widgetWrapper.style.top = (e.clientY - dy) + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      widgetWrapper.style.transition = 'opacity 0.4s ease';
+    }
+  });
+
+  // --- Гарячі клавіші та події налаштувань ---
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      toggleSettings();
+    }
+    if (e.shiftKey && e.key.toLowerCase() === 'x') {
+      e.preventDefault();
+      clearTimeout(fadeTimer);
+      clearTimeout(secondaryFadeTimer);
+      widgetWrapper.style.opacity = '1';
+      fadeTimer = setTimeout(() => { startFadeOutSequence(); }, 5000);
+    }
+  });
+
+  settingsPanel.querySelector('#set-close').onclick = () => {
+    settingsOpen = false;
+    updatePanels();
+  };
+
+  settingsPanel.querySelector('#set-target').oninput = (e) => {
+    targetPerHour = parseInt(e.target.value) || 44;
+    saveState(); render(); if(tableOpen) renderFullTable();
+  };
+
+  settingsPanel.querySelector('#set-percent').onchange = (e) => {
+    showPercentage = e.target.checked;
+    saveState(); render();
+  };
+
+  settingsPanel.querySelector('#set-opacity').oninput = (e) => {
+    idleOpacity = parseFloat(e.target.value);
+    widgetWrapper.style.opacity = idleOpacity;
+    saveState();
+  };
+
+  settingsPanel.querySelector('#set-color').oninput = (e) => {
+    accentColor = e.target.value;
+    saveState(); render(); if(tableOpen) renderFullTable();
+  };
+
+  settingsPanel.querySelector('#btn-set-time').onclick = () => {
+    const timeStr = settingsPanel.querySelector('#set-custom-time').value;
+    if (!timeStr) return;
+    let [h, m] = timeStr.split(':').map(Number);
+    let d = new Date();
+    d.setHours(h, m, 0, 0);
+
+    if (d.getTime() > Date.now()) {
+      d.setDate(d.getDate() - 1);
+    }
+
+    start = d.getTime();
+    saveState();
+    render();
+
+    const btn = settingsPanel.querySelector('#btn-set-time');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '✔';
+    btn.style.background = '#27ae60';
+    setTimeout(() => { btn.innerHTML = oldText; btn.style.background = '#3daee9'; }, 2000);
+  };
+
+  settingsPanel.querySelector('#btn-break').onclick = () => {
+    start += 30 * 60 * 1000;
+    saveState();
+    render();
+
+    const btn = settingsPanel.querySelector('#btn-break');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '✔ Zastosowano (-30m)';
+    btn.style.background = '#27ae60';
+    setTimeout(() => {
+      btn.innerHTML = oldText;
+      btn.style.background = '#f39c12';
+    }, 2000);
+  };
+
+  settingsPanel.querySelector('#btn-plus').onclick = () => addPacks(1);
+  settingsPanel.querySelector('#btn-minus').onclick = () => addPacks(-1);
+
+  settingsPanel.querySelector('#btn-reset').onclick = () => {
+    if(confirm("Czy na pewno chcesz zresetować statystyki zmiany?")) {
+      initCounts();
+      saveState();
+      settingsPanel.querySelector('#set-custom-time').value = getStartTimeStr();
+      render();
+      if (tableOpen) renderFullTable();
+    }
+  };
+
+  // --- Основна логіка Сканування та Рендеру ---
+  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function cnt(txt, what) { return (txt.match(new RegExp(esc(what), 'gi')) || []).length; }
+
+  function render() {
+    calcTotal();
+    const rate = getRate();
+    const curSlot = getSlot();
+    const slotPacks = hourCounts[curSlot] || 0;
+
+    document.getElementById('w-packs').textContent = total;
+
+    if (showPercentage) {
+      const pctRate = targetPerHour > 0 ? (rate / targetPerHour) * 100 : 0;
+      document.getElementById('w-rate').textContent = pctRate.toFixed(0) + '%';
+    } else {
+      document.getElementById('w-rate').textContent = rate.toFixed(2) + '/h';
+    }
+
+    const pct = Math.min(100, Math.round((slotPacks / targetPerHour) * 100));
+    const good = slotPacks >= targetPerHour;
+
+    document.getElementById('w-hour-row').innerHTML = `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: bold; align-items: center;">
+        <span style="color: #ccc;">${curSlot}</span>
+        <span>${slotPacks} <span style="color:#777; font-size: 11px;">/ ${targetPerHour}</span></span>
+      </div>
+      <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+        <div style="height: 100%; width: ${pct}%; background: ${good ? accentColor : '#3daee9'}; border-radius: 4px; transition: width 0.3s, background 0.3s;"></div>
+      </div>
+    `;
+  }
+
   function scan() {
     const txt = document.body.innerText || '';
-    const m = cnt(txt, triggerText);
-    const p = cnt(seen, triggerText);
-    const pm = cnt(txt, problemText);
-    const pp = cnt(seen, problemText);
-    const nlpm = cnt(txt, nlpText);
-    const nlpp = cnt(seen, nlpText);
-    if (nlpm > nlpp) {
-      skipNextPack = true;
-      lastTrigger = 'NLP: POMIŃ NASTĘPNĄ ' + timeNow();
-      markActivity();
-      render();
-    }
-    if (pm > pp) addProblem(pm - pp);
-    else if (m > p) {
-      let diff = m - p;
-      if (skipNextPack) {
-        diff--;
-        skipNextPack = false;
-        lastTrigger = 'POMINIĘTO PO NLP ' + timeNow();
-      }
-      if (diff > 0) addPacks(diff);
+    const currentMatches = cnt(txt, triggerText);
+    const previousMatches = cnt(seen, triggerText);
+
+    if (currentMatches > previousMatches) {
+      addPacks(currentMatches - previousMatches);
     }
     seen = txt;
-  }
-  function toggleUI() {
-    open = !open;
-    panel.style.transform = open ? 'translateX(0)' : 'translateX(350px)';
-    panel.style.opacity = open ? '1' : '0';
-    panel.style.pointerEvents = open ? 'auto' : 'none';
-  }
-  function showSettings(v) {
-    panel.querySelector('#mainView').style.display = v ? 'none' : 'block';
-    panel.querySelector('#settingsView').style.display = v ? 'block' : 'none';
-    applyMini();
   }
 
   setInterval(scan, 1000);
   setInterval(render, 1000);
-  window.addEventListener('beforeunload', () => saveState(true));
-  box.onclick = toggleUI;
-  document.addEventListener('keydown', (e) => {
-    if (e.altKey && e.key.toLowerCase() === 'l') toggleUI();
-    if (e.altKey && e.key.toLowerCase() === 'p') removePack();
-    if (e.altKey && e.key.toLowerCase() === 'o') addPacks(1);
-  });
-  panel.querySelector('#settingsBtn').onclick = () => showSettings(true);
-  panel.querySelector('#backBtn').onclick = () => showSettings(false);
-  panel.querySelector('#ratePercent').checked = showRatePercent;
-  panel.querySelector('#leftMode').checked = showLeftInsteadTotal;
-  panel.querySelector('#autoColor').checked = autoStatusColor;
-  panel.querySelector('#ratePercent').onchange = (e) => { showRatePercent = e.target.checked; saveState(true); applyMini(); };
-  panel.querySelector('#leftMode').onchange = (e) => { showLeftInsteadTotal = e.target.checked; saveState(true); applyMini(); };
-  panel.querySelector('#autoColor').onchange = (e) => { autoStatusColor = e.target.checked; saveState(true); applyMini(); };
-  panel.querySelector('#resetOff').onclick = () => { offRemain = 30 * 60 * 1000; lastActivityTime = Date.now(); offLastTick = Date.now(); saveState(true); render(); };
-  panel.querySelector('#c').oninput = (e) => { manualColor = e.target.value; saveState(true); applyMini(); };
-  panel.querySelector('#s').oninput = (e) => { miniSize = parseInt(e.target.value) || 24; box.style.fontSize = miniSize + 'px'; saveState(true); };
-  panel.querySelector('#o').oninput = (e) => { miniOpacity = parseInt(e.target.value) || 100; box.style.opacity = miniOpacity / 100; saveState(true); };
-  panel.querySelector('#target').oninput = (e) => { targetPerHour = parseInt(e.target.value) || 44; saveState(true); render(); };
-  
+  window.addEventListener('beforeunload', saveState);
+
   render();
-  scan();
-  renderHours(true);
-  applyMini();
 })();
+  </script>
+
+  <script>
+    function fallbackCopyTextToClipboard(text) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+      
+      // Ховаємо текстове поле, щоб екран не стрибав
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+      }
+
+      document.body.removeChild(textArea);
+    }
+
+    async function copyTampermonkeyCode() {
+      const tmCode = document.getElementById('tm-code-block').textContent.trim();
+      const status = document.getElementById('status');
+      
+      try {
+        // Пробуємо сучасний метод (якщо файл колись буде на сервері https)
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(tmCode);
+        } else {
+          // Якщо це локальний файл (file://), використовуємо старий метод
+          fallbackCopyTextToClipboard(tmCode);
+        }
+        
+        status.textContent = '✅ Skopiowano! Wklej w Tampermonkey (Ctrl+S).';
+        setTimeout(() => { status.textContent = ''; }, 5000);
+      } catch (e) {
+        status.textContent = '❌ Błąd kopiowania. Zaznacz kod ręcznie.';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>
