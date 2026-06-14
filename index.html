@@ -303,7 +303,7 @@
               <div class="changelog-date">Ostatnia aktualizacja</div>
               <div class="changelog-notes">
                 C-RET: Dodano ikonkę ustawień, spójny styl paneli (Dark Mode) oraz poprawiono liczenie od wybranej godziny. Zmieniono skrót na Ctrl+Z.<br><br>
-                REIT+: Całkowity redesign na jasny motyw, mniejsze, bardziej kompaktowe panele oraz ulepszony system zapisu.
+                REIT+: Całkowity redesign na jasny motyw, mniejsze, bardziej kompaktowe panele oraz ulepszony system zapisu. Kod HTML posiada czytelną strukturę.
               </div>
             </div>
           </div>
@@ -334,12 +334,31 @@
   const hours = night ? nightHours : dayHours;
   const shiftName = night ? 'night' : 'day';
 
-  let total = 0, problemTotal = 0, seen = '', start = Date.now(), lastTrigger = '-';
-  let targetPerHour = 44, beforeBreak = 0, open = true, grace = 4 * 60 * 1000;
-  let offRemain = 30 * 60 * 1000, lastActivityTime = Date.now(), offLastTick = Date.now();
-  let triggerText = 'Wprowadź pojemnik', problemText = 'Zeskanuj - PROBLEM-SOLVE', nlpText = 'Zeskanuj nowy NLP';
-  let skipNextPack = false, showRatePercent = false, showLeftInsteadTotal = false, autoStatusColor = false;
-  let manualColor = '#ffffff', miniOpacity = 0, miniSize = 24, hourCounts = {}, problemCounts = {}, lastSave = 0;
+  let total = 0;
+  let problemTotal = 0;
+  let seen = '';
+  let start = Date.now();
+  let lastTrigger = '-';
+  let targetPerHour = 44;
+  let beforeBreak = 0;
+  let open = true;
+  let grace = 4 * 60 * 1000;
+  let offRemain = 30 * 60 * 1000;
+  let lastActivityTime = Date.now();
+  let offLastTick = Date.now();
+  let triggerText = 'Wprowadź pojemnik';
+  let problemText = 'Zeskanuj - PROBLEM-SOLVE';
+  let nlpText = 'Zeskanuj nowy NLP';
+  let skipNextPack = false;
+  let showRatePercent = false;
+  let showLeftInsteadTotal = false;
+  let autoStatusColor = false;
+  let manualColor = '#ffffff';
+  let miniOpacity = 0;
+  let miniSize = 24;
+  let hourCounts = {};
+  let problemCounts = {};
+  let lastSave = 0;
 
   function initCounts() {
     hours.forEach((h) => {
@@ -351,7 +370,10 @@
   function loadState() {
     try {
       const s = JSON.parse(localStorage.getItem(saveKey) || localStorage.getItem('scanCounterV23State') || '{}');
-      if (s.shift !== shiftName) { initCounts(); return; }
+      if (s.shift !== shiftName) {
+        initCounts();
+        return;
+      }
       start = Number(s.start) || Date.now();
       problemTotal = Math.max(0, parseInt(s.problemTotal) || 0);
       beforeBreak = Math.max(0, parseInt(s.beforeBreak) || 0);
@@ -363,13 +385,16 @@
       manualColor = s.manualColor || '#ffffff';
       miniOpacity = Math.min(100, Math.max(0, s.miniOpacity !== undefined ? parseInt(s.miniOpacity) : 0));
       miniSize = Math.min(45, Math.max(10, parseInt(s.miniSize) || 24));
-      hourCounts = {}; problemCounts = {};
+      hourCounts = {};
+      problemCounts = {};
       hours.forEach((h) => {
         hourCounts[h] = Math.max(0, parseInt(s.hourCounts && s.hourCounts[h]) || 0);
         problemCounts[h] = Math.max(0, parseInt(s.problemCounts && s.problemCounts[h]) || 0);
       });
       lastTrigger = s.lastTrigger || 'PRZYWRÓCONO';
-    } catch (_) { initCounts(); }
+    } catch (_) {
+      initCounts();
+    }
   }
 
   function saveState(force) {
@@ -385,7 +410,8 @@
     } catch (_) {}
   }
 
-  loadState(); initCounts();
+  loadState();
+  initCounts();
 
   const box = document.createElement('div');
   box.setAttribute('data-reit-counter', 'mini');
@@ -402,6 +428,7 @@
       <div style="font-size:18px; font-weight:900; color:#0f172a; letter-spacing:0.5px; text-transform:uppercase;">REIT+</div>
       <button id="settingsBtn" title="Ustawienia" style="width:30px; height:30px; border:none; border-radius:8px; background:rgba(0,0,0,0.05); color:#0f172a; font-size:16px; cursor:pointer; transition:background 0.2s;">⚙️</button>
     </div>
+    
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
       <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
         <div style="font-size:10px; color:#64748b; text-transform:uppercase; margin-bottom:4px; font-weight:700;">Trigger</div>
@@ -412,6 +439,7 @@
         <div id="off" style="font-size:18px; font-weight:900; color:#16a34a;">30:00</div>
       </div>
     </div>
+    
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
       <div style="background:linear-gradient(135deg, #ef4444, #dc2626); color:white; padding:12px 8px; border-radius:10px; text-align:center; text-transform:uppercase; box-shadow:0 2px 8px rgba(239, 68, 68, 0.25);">
         <div style="font-size:10px; font-weight:900; opacity:0.9; margin-bottom:2px;">Problem</div>
@@ -422,13 +450,16 @@
         <div id="left" style="font-size:22px; font-weight:900;">0</div>
       </div>
     </div>
+    
     <div id="hours" style="margin-top:8px;"></div>
   </div>
+  
   <div id="settingsView" style="display:none">
     <div style="display:flex; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:10px;">
       <button id="backBtn" title="Powrót" style="width:30px; height:30px; border:none; border-radius:8px; background:rgba(0,0,0,0.05); color:#0f172a; font-size:18px; cursor:pointer; margin-right:10px; display:flex; align-items:center; justify-content:center;">‹</button>
       <div style="font-size:16px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;">Ustawienia</div>
     </div>
+    
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
       <div style="display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:center; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;">
         <label>Kolor mini</label>
@@ -441,15 +472,18 @@
         <input type="text" inputmode="numeric" id="target" value="\${targetPerHour}" style="padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:\${technoFont}; font-weight:900; width:100%; box-sizing:border-box; outline:none;">
       </div>
     </div>
+    
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
       <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;">Tempo % / h <input id="ratePercent" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;"></label>
       <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;">Pozostało zamiast sumy <input id="leftMode" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;"></label>
       <label style="display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;">Auto-kolor tempa <input id="autoColor" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;"></label>
     </div>
+    
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
       <div style="font-size:10px; font-weight:900; text-transform:uppercase; margin-bottom:8px; color:#64748b;">Podgląd mini widgetu</div>
       <div id="miniPreview" style="font-size:20px; font-weight:900; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center; color:#1e293b;">0 | 0.00/h</div>
     </div>
+    
     <button id="resetOff" style="width:100%; padding:10px; border:none; border-radius:8px; background:#facc15; color:#1e293b; font-family:\${technoFont}; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; box-shadow:0 2px 6px rgba(250, 204, 21, 0.3); transition:background 0.2s;">Reset Off Task</button>
   </div>`;
   
@@ -710,7 +744,10 @@
   panel.querySelector('#o').oninput = (e) => { miniOpacity = parseInt(e.target.value) || 0; box.style.opacity = miniOpacity / 100; saveState(true); };
   panel.querySelector('#target').oninput = (e) => { targetPerHour = parseInt(e.target.value) || 44; saveState(true); render(); };
   
-  render(); scan(); renderHours(true); applyMini();
+  render();
+  scan();
+  renderHours(true);
+  applyMini();
 })();
   </script>
 
@@ -1103,8 +1140,7 @@
       // Pobieranie kodu dla zakładki (REIT+)
       const reitRawCode = document.getElementById('reit-code-block').textContent.trim();
       
-      // Magia dzieje się tutaj: Strona sama kompresuje i szyfruje kod (URL-encoding) 
-      // w locie. Dzięki temu tekst nigdy się nie utnie w edytorze kodu!
+      // Kompresja w locie do bezpiecznego formatu URL
       const safeBookmarkletUrl = "javascript:" + encodeURIComponent(reitRawCode);
       document.getElementById('reit-bookmark-btn').href = safeBookmarkletUrl;
     });
