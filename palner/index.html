@@ -6,24 +6,111 @@
     <title>Мій Планер</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
-    <meta name="theme-color" content="#4CAF50">
+    <meta name="theme-color" id="theme-meta" content="#f7f9fc">
 </head>
 <body>
+    <header class="top-bar">
+        <h1 class="page-title" id="header-title">Сьогодні</h1>
+    </header>
+
     <div class="app-container">
-        <h1>Мої Завдання</h1>
-        
-        <div class="task-card">
-            <div class="task-header">
-                <h2>💊 Випити ліки</h2>
-                <span class="badge">1 раз на день</span>
+        <div id="view-home" class="view active">
+            <div id="tasks-container"></div>
+            <div class="empty-task" id="open-modal-btn">
+                <span class="plus-icon">+</span>
+                <p>Створити нове завдання</p>
             </div>
-            <p class="description">Вітаміни або ліки, які потрібно приймати щодня.</p>
+        </div>
+
+        <div id="view-calendar" class="view hidden">
+            <div class="card info-card">
+                <h2>Ваша активність 📊</h2>
+                <p>Тут буде відображатися ваша статистика виконання завдань (в розробці для наступних версій).</p>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-num" id="total-tasks-stat">0</span>
+                        <span class="stat-label">Всього завдань</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-settings" class="view hidden">
+            <div class="card settings-card">
+                <h3>Вигляд</h3>
+                <div class="setting-item">
+                    <span>🌙 Темна тема</span>
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                
+                <h3 style="margin-top: 20px;">Дані</h3>
+                <button class="settings-btn" id="export-btn">💾 Зберегти дані (Експорт)</button>
+                <button class="settings-btn outline" id="import-btn-trigger">📂 Відновити дані (Імпорт)</button>
+                <input type="file" id="import-file" accept=".json" class="hidden">
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-target="view-home" data-title="Сьогодні">
+            <span class="icon">📋</span>
+            <span>Сьогодні</span>
+        </div>
+        <div class="nav-item" data-target="view-calendar" data-title="Календар">
+            <span class="icon">📅</span>
+            <span>Календар</span>
+        </div>
+        <div class="nav-item" data-target="view-settings" data-title="Налаштування">
+            <span class="icon">⚙️</span>
+            <span>Налаштування</span>
+        </div>
+    </nav>
+
+    <div id="task-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Нове завдання</h3>
             
-            <button id="med-btn" class="action-btn">Я випив(ла) ліки</button>
-            
-            <div id="timer-display" class="timer-box hidden">
-                <p>Наступний прийом через:</p>
-                <div id="countdown" class="time">24:00:00</div>
+            <div class="form-group">
+                <input type="text" id="task-title" placeholder="Назва завдання...">
+            </div>
+
+            <div class="form-group">
+                <label>Тип завдання:</label>
+                <select id="task-type" onchange="toggleFormFields()">
+                    <option value="timer">⏳ Таймер (повторюється)</option>
+                    <option value="todo">✅ Разове завдання (To-Do)</option>
+                    <option value="text">📝 Текстова нотатка</option>
+                </select>
+            </div>
+
+            <div class="color-picker form-group">
+                <label>Колір картки:</label>
+                <div class="color-options" id="color-options">
+                    <div class="color-circle active" data-color="default" style="background: var(--card-bg); border: 2px solid #cbd5e0;"></div>
+                    <div class="color-circle" data-color="red" style="background: #fff5f5; border: 2px solid #fc8181;"></div>
+                    <div class="color-circle" data-color="green" style="background: #f0fff4; border: 2px solid #68d391;"></div>
+                    <div class="color-circle" data-color="blue" style="background: #ebf8ff; border: 2px solid #63b3ed;"></div>
+                    <div class="color-circle" data-color="yellow" style="background: #fffff0; border: 2px solid #f6e05e;"></div>
+                </div>
+            </div>
+
+            <div id="timer-settings">
+                <div class="form-group">
+                    <label>Інтервал (у годинах):</label>
+                    <input type="number" id="task-interval" value="24" min="1">
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="text-settings">
+                <textarea id="task-text" placeholder="Додаткова інформація..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="cancel-btn" id="close-modal-btn">Скасувати</button>
+                <button class="save-btn" id="save-task-btn">Створити</button>
             </div>
         </div>
     </div>
