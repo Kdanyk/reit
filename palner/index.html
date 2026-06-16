@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Мій Планер</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#4CAF50">
+</head>
+<body>
+    <div class="app-container">
+        <h1>Мої Завдання</h1>
+        
+        <div class="task-card">
+            <div class="task-header">
+                <h2>💊 Випити ліки</h2>
+                <span class="badge">1 раз на день</span>
+            </div>
+            <p class="description">Вітаміни або ліки, які потрібно приймати щодня.</p>
+            
+            <button id="med-btn" class="action-btn">Я випив(ла) ліки</button>
+            
+            <div id="timer-display" class="timer-box hidden">
+                <p>Наступний прийом через:</p>
+                <div id="countdown" class="time">24:00:00</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
