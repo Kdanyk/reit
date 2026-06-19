@@ -1,35 +1,51 @@
 document.addEventListener("DOMContentLoaded", async () => {
     
-    // Функція для створення безпечного посилання закладки
+    // Спеціальна функція для перетворення коду у безпечну закладку
     function makeBookmarklet(rawCode) {
         let cleanCode = rawCode.replace(/\s+/g, ' ').trim();
-        // Кодуємо знак # (для кольорів HEX) та %
         cleanCode = cleanCode.replace(/%/g, '%25').replace(/#/g, '%23');
         return "javascript:" + cleanCode;
     }
 
-    // Завантажуємо C-RET (Закладка)
+    // 1. Завантажуємо C-RET
     try {
         const res = await fetch('scripts/cret-bookmarklet.js');
         const code = await res.text();
         const btn = document.getElementById('cret-bookmark-btn');
-        btn.href = makeBookmarklet(code);
-        btn.textContent = "🔖 Przeciągnij do paska zakładek";
+        if (btn) {
+            btn.href = makeBookmarklet(code);
+            btn.textContent = "🔖 Przeciągnij do paska zakładek";
+        }
     } catch (e) {
-        console.error("Błąd ładowania C-RET:", e);
-        document.getElementById('cret-bookmark-btn').textContent = "❌ Błąd ładowania";
+        console.error("Помилка C-RET:", e);
     }
 
-    // Завантажуємо Clean-Decant PL
+    // 2. Завантажуємо Clean-Decant PL
     try {
         const res = await fetch('scripts/cd-pl-bookmarklet.js');
         const code = await res.text();
         const btn = document.getElementById('cd-pl-bookmark-btn');
-        btn.href = makeBookmarklet(code);
-        btn.textContent = "🔖 Przeciągnij do paska (PL)";
+        if (btn) {
+            btn.href = makeBookmarklet(code);
+            btn.textContent = "🔖 Przeciągnij do paska (PL)";
+        }
     } catch (e) {
-        console.error("Błąd ładowania CD-PL:", e);
-        document.getElementById('cd-pl-bookmark-btn').textContent = "❌ Błąd ładowania";
+        console.error("Помилка CD-PL:", e);
+    }
+
+    // 3. Завантажуємо Clean-Decant UA
+    try {
+        const res = await fetch('scripts/cd-ua-bookmarklet.js');
+        const code = await res.text();
+        const btn = document.getElementById('cd-ua-bookmark-btn');
+        if (btn) {
+            btn.href = makeBookmarklet(code);
+            btn.textContent = "🔖 Перетягніть на панель (UA)";
+            // Прибираємо червоне повідомлення про помилку, якщо воно є в HTML
+            btn.style.pointerEvents = "auto";
+        }
+    } catch (e) {
+        console.error("Помилка CD-UA:", e);
     }
 
     // Функція копіювання для Tampermonkey
@@ -42,7 +58,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(tmCode);
             } else {
-                // Fallback 
                 const textArea = document.createElement("textarea");
                 textArea.value = tmCode;
                 textArea.style.position = "fixed";
@@ -56,9 +71,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             status.textContent = '✅ Skopiowano! Wklej w Tampermonkey (Ctrl+S).';
             setTimeout(() => { status.textContent = ''; }, 5000);
         } catch (e) {
-            status.textContent = '❌ Błąd. Sprawdź konsole.';
+            status.textContent = '❌ Помилка копіювання.';
             setTimeout(() => { status.textContent = ''; }, 3000);
-            console.error(e);
         }
     };
 });
