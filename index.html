@@ -1588,20 +1588,27 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       
+      // Функція для створення правильного посилання для закладки (без ламання спецсимволів)
+      function makeBookmarklet(rawCode) {
+        // Замінюємо всі перенесення рядків і зайві пробіли на один пробіл
+        const cleanCode = rawCode.replace(/\s+/g, ' ').trim();
+        return "javascript:" + cleanCode;
+      }
+
       // 1. C-RET (Dawniej REIT+)
-      const cretRaw = document.getElementById('cret-code-block').textContent.trim();
-      document.getElementById('cret-bookmark-btn').href = "javascript:" + encodeURIComponent(cretRaw);
+      const cretRaw = document.getElementById('cret-code-block').textContent;
+      document.getElementById('cret-bookmark-btn').href = makeBookmarklet(cretRaw);
 
       // 2. Clean-Decant PL
-      const cdPlRaw = document.getElementById('cd-pl-code-block').textContent.trim();
-      document.getElementById('cd-pl-bookmark-btn').href = "javascript:" + encodeURIComponent(cdPlRaw);
+      const cdPlRaw = document.getElementById('cd-pl-code-block').textContent;
+      document.getElementById('cd-pl-bookmark-btn').href = makeBookmarklet(cdPlRaw);
 
       // 3. Clean-Decant UA
       // C-Decant UA jest aktualnie nieaktywny, sprawdzamy by uniknąć błędów
-      const cdUaRaw = document.getElementById('cd-ua-code-block').textContent.trim();
+      const cdUaRaw = document.getElementById('cd-ua-code-block').textContent;
       const cdUaBtn = document.getElementById('cd-ua-bookmark-btn');
       if (cdUaBtn) {
-        cdUaBtn.href = "javascript:" + encodeURIComponent(cdUaRaw);
+        cdUaBtn.href = makeBookmarklet(cdUaRaw);
       }
     });
 
