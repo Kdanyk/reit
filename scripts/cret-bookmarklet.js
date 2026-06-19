@@ -15,7 +15,7 @@
   let total = 0, problemTotal = 0, seen = '', start = Date.now(), lastTrigger = '-';
   let targetPerHour = 44, beforeBreak = 0, open = true, grace = 4 * 60 * 1000;
   let offRemain = 30 * 60 * 1000, lastActivityTime = Date.now(), offLastTick = Date.now();
-  let triggerText = 'Wprowadź pojemnik', problemText = 'Zeskanuj - PROBLEM-SOLVE', nlpText = 'Zeskanuj новий NLP';
+  let triggerText = 'Wprowadź pojemnik', problemText = 'Zeskanuj - PROBLEM-SOLVE', nlpText = 'Zeskanuj nowy NLP';
   let skipNextPack = false, showRatePercent = false, showLeftInsteadTotal = false, autoStatusColor = false;
   let manualColor = '#808080', miniOpacity = 100, miniSize = 12, miniPos = 'tl', hourCounts = {}, problemCounts = {}, lastSave = 0;
 
@@ -50,9 +50,7 @@
     const now = Date.now();
     if (!force && now - lastSave < 1500) return;
     lastSave = now;
-    try {
-      localStorage.setItem(saveKey, JSON.stringify({ shift: shiftName, savedAt: now, start, problemTotal, beforeBreak, targetPerHour, offRemain, showRatePercent, showLeftInsteadTotal, autoStatusColor, manualColor, miniOpacity, miniSize, miniPos, hourCounts, problemCounts, lastTrigger }));
-    } catch (_) {}
+    try { localStorage.setItem(saveKey, JSON.stringify({ shift: shiftName, savedAt: now, start, problemTotal, beforeBreak, targetPerHour, offRemain, showRatePercent, showLeftInsteadTotal, autoStatusColor, manualColor, miniOpacity, miniSize, miniPos, hourCounts, problemCounts, lastTrigger })); } catch (_) {}
   }
 
   loadState(); initCounts();
@@ -110,32 +108,32 @@
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; width:100%; box-sizing:border-box;">
       <div style="display:grid; grid-template-columns:105px 1fr; gap:8px; align-items:center; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; width:100%; box-sizing:border-box;">
         <label>Pozycja mini</label>
-        <select id="pos" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; font-family:${technoFont}; font-weight:700; box-sizing:border-box; margin:0;">
-          <option value="bl" ${miniPos === 'bl' ? 'selected' : ''}>Dół - Lewo</option>
-          <option value="br" ${miniPos === 'br' ? 'selected' : ''}>Dół - Prawo</option>
-          <option value="tl" ${miniPos === 'tl' ? 'selected' : ''}>Góra - Lewo</option>
-          <option value="tr" ${miniPos === 'tr' ? 'selected' : ''}>Góra - Prawo</option>
+        <select id="pos" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; font-family:\${technoFont}; font-weight:700; box-sizing:border-box; margin:0;">
+          <option value="bl" \${miniPos === 'bl' ? 'selected' : ''}>Dół - Lewo</option>
+          <option value="br" \${miniPos === 'br' ? 'selected' : ''}>Dół - Prawo</option>
+          <option value="tl" \${miniPos === 'tl' ? 'selected' : ''}>Góra - Lewo</option>
+          <option value="tr" \${miniPos === 'tr' ? 'selected' : ''}>Góra - Prawo</option>
         </select>
         <label>Kolor mini</label>
-        <input type="color" id="c" value="${manualColor}" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; padding:0; box-sizing:border-box; margin:0;">
+        <input type="color" id="c" value="\${manualColor}" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; padding:0; box-sizing:border-box; margin:0;">
         <label>Rozmiar mini</label>
-        <input type="range" id="s" min="10" max="45" value="${miniSize}" style="width:100%; accent-color:#3b82f6; box-sizing:border-box; margin:0;">
-        <label>Widoczність</label>
-        <input type="range" id="o" min="0" max="100" value="${miniOpacity}" style="width:100%; accent-color:#3b82f6; box-sizing:border-box; margin:0;">
+        <input type="range" id="s" min="10" max="45" value="\${miniSize}" style="width:100%; accent-color:#3b82f6; box-sizing:border-box; margin:0;">
+        <label>Widoczność</label>
+        <input type="range" id="o" min="0" max="100" value="\${miniOpacity}" style="width:100%; accent-color:#3b82f6; box-sizing:border-box; margin:0;">
         <label>Reit/h cel</label>
-        <input type="text" inputmode="numeric" id="target" value="${targetPerHour}" style="width:100%; padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:${technoFont}; font-weight:900; box-sizing:border-box; outline:none; margin:0;">
+        <input type="text" inputmode="numeric" id="target" value="\${targetPerHour}" style="width:100%; padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:\${technoFont}; font-weight:900; box-sizing:border-box; outline:none; margin:0;">
       </div>
     </div>
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; width:100%; box-sizing:border-box;">
-      <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b; cursor:pointer;">Tempo % / h <input id="ratePercent" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; margin:0; cursor:pointer;" ${showRatePercent ? 'checked' : ''}></label>
-      <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b; cursor:pointer;">Pozostało замість суми <input id="leftMode" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; margin:0; cursor:pointer;" ${showLeftInsteadTotal ? 'checked' : ''}></label>
-      <label style="display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b; cursor:pointer;">Auto-kolor tempa <input id="autoColor" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; margin:0; cursor:pointer;" ${autoStatusColor ? 'checked' : ''}></label>
+      <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b; cursor:pointer;">Tempo % / h <input id="ratePercent" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; margin:0; cursor:pointer;" \${showRatePercent ? 'checked' : ''}></label>
+      <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b; cursor:pointer;">Pozostało zamiast sumy <input id="leftMode" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; margin:0; cursor:pointer;" \${showLeftInsteadTotal ? 'checked' : ''}></label>
+      <label style="display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b; cursor:pointer;">Auto-kolor tempa <input id="autoColor" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; margin:0; cursor:pointer;" \${autoStatusColor ? 'checked' : ''}></label>
     </div>
-    <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; width:100%; box-sizing:border-box;">
+    <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:16px; width:100%; box-sizing:border-box;">
       <div style="font-size:10px; font-weight:900; text-transform:uppercase; margin-bottom:8px; color:#64748b;">Podgląd mini widgetu</div>
       <div id="miniPreview" style="font-size:20px; font-weight:900; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center; color:#1e293b; width:100%; box-sizing:border-box;">0 | 0.00/h</div>
     </div>
-    <button id="resetOff" style="width:100%; padding:10px; border:none; border-radius:8px; background:#facc15; color:#1e293b; font-family:${technoFont}; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; transition:background 0.2s; margin-bottom:14px; box-sizing:border-box;">Reset Off Task</button>
+    <button id="resetOff" style="width:100%; padding:10px; border:none; border-radius:8px; background:#facc15; color:#1e293b; font-family:\${technoFont}; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; box-shadow:0 1px 3px rgba(0,0,0,0.1); transition:background 0.2s; margin-bottom:14px; box-sizing:border-box;">Reset Off Task</button>
   </div>`;
 
   document.body.appendChild(panel);
@@ -201,25 +199,24 @@
     const max = Math.max(targetPerHour, beforeBreak, ...visibleHours.map((h) => hourCounts[h] || 0), 1);
     let rows = visibleHours.map((h) => {
       const val = hourCounts[h] || 0; const bars = Math.min(100, Math.round((val / max) * 100)); const good = val >= targetPerHour;
-      return `<div style="display:grid; grid-template-columns:40px 45px 1fr; gap:10px; align-items:center; background:#ffffff; border:1px solid rgba(0,0,0,0.05); border-radius:8px; padding:6px 10px; margin-bottom:6px; border-left:4px solid ${good ? '#22c55e' : '#cbd5e1'}; width:100%; box-sizing:border-box;">
-        <b style="font-size:12px; text-align:left; color:#475569;">${h}</b>
-        <input class="hc" data-h="${h}" type="text" inputmode="numeric" value="${val}" style="width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#f8fafc; color:#1e293b; text-align:center; font-family:${technoFont}; font-weight:900; outline:none; font-size:12px; box-sizing:border-box;">
+      return \`<div style="display:grid; grid-template-columns:40px 45px 1fr; gap:10px; align-items:center; background:#ffffff; border:1px solid rgba(0,0,0,0.05); border-radius:8px; padding:6px 10px; margin-bottom:6px; border-left:4px solid \${good ? '#22c55e' : '#cbd5e1'}; width:100%; box-sizing:border-box;">
+        <b style="font-size:12px; text-align:left; color:#475569;">\${h}</b>
+        <input class="hc" data-h="\${h}" type="text" inputmode="numeric" value="\${val}" style="width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#f8fafc; color:#1e293b; text-align:center; font-family:\${technoFont}; font-weight:900; outline:none; font-size:12px; box-sizing:border-box;">
         <div style="height:6px; background:#f1f5f9; border-radius:999px; overflow:hidden; width:100%;">
-          <div style="height:100%; width:${bars}%; background:${good ? '#22c55e' : '#3b82f6'}; border-radius:999px; transition:width 0.4s ease;"></div>
+          <div style="height:100%; width:\${bars}%; background:\${good ? '#22c55e' : '#3b82f6'}; border-radius:999px; transition:width 0.4s ease;"></div>
         </div>
-      </div>`;
+      </div>\`;
     }).join('');
     const bbBars = Math.min(100, Math.round((beforeBreak / max) * 100));
-    rows += `<div style="display:grid; grid-template-columns:85px 45px 1fr; gap:10px; align-items:center; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); border-radius:8px; padding:6px 10px; margin-top:12px; margin-bottom:6px; border-left:4px solid #94a3b8; width:100%; box-sizing:border-box;">
+    rows += \`<div style="display:grid; grid-template-columns:85px 45px 1fr; gap:10px; align-items:center; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); border-radius:8px; padding:6px 10px; margin-top:12px; margin-bottom:6px; border-left:4px solid #94a3b8; width:100%; box-sizing:border-box;">
       <b style="font-size:11px; text-align:left; color:#475569;">Przed przerwą</b>
-      <input id="beforeBreak" type="text" inputmode="numeric" value="${beforeBreak}" style="width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#ffffff; color:#1e293b; text-align:center; font-family:${technoFont}; font-weight:900; outline:none; font-size:12px; box-sizing:border-box;">
+      <input id="beforeBreak" type="text" inputmode="numeric" value="\${beforeBreak}" style="width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#ffffff; color:#1e293b; text-align:center; font-family:\${technoFont}; font-weight:900; outline:none; font-size:12px; box-sizing:border-box;">
       <div style="height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; width:100%;">
-        <div style="height:100%; width:${Math.min(100, Math.round((beforeBreak / max) * 100))}%; background:#94a3b8; border-radius:999px; transition:width 0.4s ease;"></div>
+        <div style="height:100%; width:\${Math.min(100, Math.round((beforeBreak / max) * 100))}%; background:#94a3b8; border-radius:999px; transition:width 0.4s ease;"></div>
       </div>
-    </div>`;
+    </div>\`;
     panel.querySelector('#hours').innerHTML = rows; bindCountInputs();
   }
-  function updateTop() { applyMini(); panel.querySelector('#left').textContent = Math.max(0, shiftTarget() - total); }
   function render() {
     recalcTotal(); const now = Date.now();
     if (now - lastActivityTime > grace) { offRemain -= now - offLastTick; if (offRemain < 0) offRemain = 0; }
