@@ -332,7 +332,7 @@
             <div class="changelog-version">v6.3 Aktualizacja siatki</div>
             <div class="changelog-date">Ostatnia aktualizacja</div>
             <div class="changelog-notes">
-              Dodano nowe skrypty Clean-Decant (PL i UA). Przemodelowano interfejs strony głównej na siatkę 4-elementową.
+              Dodano nowe skrypty Clean-Decant (PL i UA). Przemodelowano interfejs strony głównej na siatkę 4-elementową. Poprawiono інтерфейс (усунено зрізання налаштувань).
             </div>
           </div>
           <div class="changelog-item" style="margin-top: 10px;">
@@ -372,7 +372,7 @@
   let total = 0, problemTotal = 0, seen = '', start = Date.now(), lastTrigger = '-';
   let targetPerHour = 44, beforeBreak = 0, open = true, grace = 4 * 60 * 1000;
   let offRemain = 30 * 60 * 1000, lastActivityTime = Date.now(), offLastTick = Date.now();
-  let triggerText = 'Wprowadź pojemnik', problemText = 'Zeskanuj - PROBLEM-SOLVE', nlpText = 'Zeskanuj nowy NLP';
+  let triggerText = 'Wprowadź pojemnik', problemText = 'Zeskanuj - PROBLEM-SOLVE', nlpText = 'Zeskanuj новий NLP';
   let skipNextPack = false, showRatePercent = false, showLeftInsteadTotal = false, autoStatusColor = false;
   let manualColor = '#808080', miniOpacity = 100, miniSize = 12, miniPos = 'tl', hourCounts = {}, problemCounts = {}, lastSave = 0;
 
@@ -439,7 +439,8 @@
 
   const panel = document.createElement('div');
   panel.setAttribute('data-reit-counter', 'panel');
-  panel.style = 'position:fixed;top:58px;bottom:24px;right:20px;background:rgba(248, 250, 252, 0.95);color:#1e293b;padding:14px;border-radius:16px;z-index:999999;font-family:' + technoFont + ';width:320px;overflow-y:auto;box-sizing:border-box;backdrop-filter:blur(12px);box-shadow:0 10px 30px -5px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);scrollbar-width:thin;transform:translateX(0);opacity:1;pointer-events:auto;transition:transform .35s cubic-bezier(0.4, 0, 0.2, 1),opacity .35s ease';
+  // Розширено ширину до 335px та збільшено нижній padding до 24px
+  panel.style = 'position:fixed;top:58px;bottom:24px;right:20px;background:rgba(248, 250, 252, 0.95);color:#1e293b;padding:14px 14px 24px 14px;border-radius:16px;z-index:999999;font-family:' + technoFont + ';width:335px;overflow-y:auto;box-sizing:border-box;backdrop-filter:blur(12px);box-shadow:0 10px 30px -5px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);scrollbar-width:thin;transform:translateX(0);opacity:1;pointer-events:auto;transition:transform .35s cubic-bezier(0.4, 0, 0.2, 1),opacity .35s ease';
 
   panel.innerHTML = `
   <div id="mainView">
@@ -467,7 +468,7 @@
         <div id="left" style="font-size:22px; font-weight:900;">0</div>
       </div>
     </div>
-    <div id="hours" style="margin-top:8px;"></div>
+    <div id="hours" style="margin-top:8px; padding-bottom:10px;"></div>
   </div>
   <div id="settingsView" style="display:none">
     <div style="display:flex; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:10px;">
@@ -475,22 +476,22 @@
       <div style="font-size:16px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;">Ustawienia</div>
     </div>
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-      <div style="display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:center; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;">
+      <div style="display:grid; grid-template-columns:105px 1fr; gap:8px; align-items:center; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;">
         <label>Pozycja mini</label>
-        <select id="pos" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; font-family:${technoFont}; font-weight:700;">
-          <option value="bl" ${miniPos === 'bl' ? 'selected' : ''}>Dół - Lewo</option>
-          <option value="br" ${miniPos === 'br' ? 'selected' : ''}>Dół - Prawo</option>
-          <option value="tl" ${miniPos === 'tl' ? 'selected' : ''}>Góra - Lewo</option>
-          <option value="tr" ${miniPos === 'tr' ? 'selected' : ''}>Góra - Prawo</option>
+        <select id="pos" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; font-family:\${technoFont}; font-weight:700; box-sizing:border-box;">
+          <option value="bl" \${miniPos === 'bl' ? 'selected' : ''}>Dół - Lewo</option>
+          <option value="br" \${miniPos === 'br' ? 'selected' : ''}>Dół - Prawo</option>
+          <option value="tl" \${miniPos === 'tl' ? 'selected' : ''}>Góra - Lewo</option>
+          <option value="tr" \${miniPos === 'tr' ? 'selected' : ''}>Góra - Prawo</option>
         </select>
         <label>Kolor mini</label>
-        <input type="color" id="c" value="${manualColor}" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; padding:0;">
+        <input type="color" id="c" value="\${manualColor}" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; padding:0; box-sizing:border-box;">
         <label>Rozmiar mini</label>
-        <input type="range" id="s" min="10" max="45" value="${miniSize}" style="width:100%; accent-color:#3b82f6;">
-        <label>Widoczність</label>
-        <input type="range" id="o" min="0" max="100" value="${miniOpacity}" style="width:100%; accent-color:#3b82f6;">
+        <input type="range" id="s" min="10" max="45" value="\${miniSize}" style="width:100%; accent-color:#3b82f6; box-sizing:border-box;">
+        <label>Widoczność</label>
+        <input type="range" id="o" min="0" max="100" value="\${miniOpacity}" style="width:100%; accent-color:#3b82f6; box-sizing:border-box;">
         <label>Reit/h cel</label>
-        <input type="text" inputmode="numeric" id="target" value="${targetPerHour}" style="padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:${technoFont}; font-weight:900; width:100%; box-sizing:border-box; outline:none;">
+        <input type="text" inputmode="numeric" id="target" value="\${targetPerHour}" style="padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:\${technoFont}; font-weight:900; width:100%; box-sizing:border-box; outline:none;">
       </div>
     </div>
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
@@ -502,7 +503,7 @@
       <div style="font-size:10px; font-weight:900; text-transform:uppercase; margin-bottom:8px; color:#64748b;">Podgląd mini widgetu</div>
       <div id="miniPreview" style="font-size:20px; font-weight:900; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center; color:#1e293b;">0 | 0.00/h</div>
     </div>
-    <button id="resetOff" style="width:100%; padding:10px; border:none; border-radius:8px; background:#facc15; color:#1e293b; font-family:${technoFont}; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; box-shadow:0 2px 6px rgba(250, 204, 21, 0.3); transition:background 0.2s;">Reset Off Task</button>
+    <button id="resetOff" style="width:100%; padding:10px; border:none; border-radius:8px; background:#facc15; color:#1e293b; font-family:\${technoFont}; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; box-shadow:0 2px 6px rgba(250, 204, 21, 0.3); transition:background 0.2s; margin-bottom:14px;">Reset Off Task</button>
   </div>`;
 
   document.body.appendChild(panel);
@@ -651,15 +652,15 @@
   function renderHours(force) {
     const active = document.activeElement;
     if (!force && active && panel.contains(active) && (active.classList.contains('hc') || active.id === 'beforeBreak')) return;
-    
+
     const visibleHours = night ? nightHours : dayHours;
     const max = Math.max(targetPerHour, beforeBreak, ...visibleHours.map((h) => hourCounts[h] || 0), 1);
-    
+
     let rows = visibleHours.map((h) => {
       const val = hourCounts[h] || 0;
       const bars = Math.min(100, Math.round((val / max) * 100));
       const good = val >= targetPerHour;
-      
+
       return `<div style="display:grid; grid-template-columns:40px 45px 1fr; gap:10px; align-items:center; background:#ffffff; border:1px solid rgba(0,0,0,0.05); border-radius:8px; padding:6px 10px; margin-bottom:6px; border-left:4px solid ${good ? '#22c55e' : '#cbd5e1'}; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
         <b style="font-size:12px; text-align:left; color:#475569;">${h}</b>
         <input class="hc" data-h="${h}" type="text" inputmode="numeric" value="${val}" style="width:100%; padding:4px 6px; border:1px solid #e2e8f0; border-radius:4px; background:#f8fafc; color:#1e293b; text-align:center; font-family:${technoFont}; font-weight:900; outline:none; font-size:12px;">
@@ -668,7 +669,7 @@
         </div>
       </div>`;
     }).join('');
-    
+
     const bbBars = Math.min(100, Math.round((beforeBreak / max) * 100));
     rows += `<div style="display:grid; grid-template-columns:85px 45px 1fr; gap:10px; align-items:center; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); border-radius:8px; padding:6px 10px; margin-top:12px; margin-bottom:6px; border-left:4px solid #94a3b8;">
       <b style="font-size:11px; text-align:left; color:#475569;">Przed przerwą</b>
@@ -677,7 +678,7 @@
         <div style="height:100%; width:${bbBars}%; background:#94a3b8; border-radius:999px; transition:width 0.4s ease;"></div>
       </div>
     </div>`;
-    
+
     panel.querySelector('#hours').innerHTML = rows;
     bindCountInputs();
   }
@@ -743,19 +744,19 @@
   setInterval(render, 1000);
   window.addEventListener('beforeunload', () => saveState(true));
   box.onclick = toggleUI;
-  
+
   document.addEventListener('keydown', (e) => {
     if (e.shiftKey && e.key.toLowerCase() === 'u') toggleUI();
     if (e.altKey && e.key.toLowerCase() === 'p') removePack();
     if (e.altKey && e.key.toLowerCase() === 'o') addPacks(1);
   });
-  
+
   panel.querySelector('#settingsBtn').onclick = () => showSettings(true);
   panel.querySelector('#backBtn').onclick = () => showSettings(false);
   panel.querySelector('#ratePercent').checked = showRatePercent;
   panel.querySelector('#leftMode').checked = showLeftInsteadTotal;
   panel.querySelector('#autoColor').checked = autoStatusColor;
-  
+
   panel.querySelector('#pos').onchange = (e) => { miniPos = e.target.value; applyMiniPos(); saveState(true); };
   panel.querySelector('#ratePercent').onchange = (e) => { showRatePercent = e.target.checked; saveState(true); applyMini(); };
   panel.querySelector('#leftMode').onchange = (e) => { showLeftInsteadTotal = e.target.checked; saveState(true); applyMini(); };
@@ -765,7 +766,7 @@
   panel.querySelector('#s').oninput = (e) => { miniSize = parseInt(e.target.value) || 12; box.style.fontSize = miniSize + 'px'; saveState(true); };
   panel.querySelector('#o').oninput = (e) => { miniOpacity = parseInt(e.target.value) || 0; box.style.opacity = miniOpacity / 100; saveState(true); };
   panel.querySelector('#target').oninput = (e) => { targetPerHour = parseInt(e.target.value) || 44; saveState(true); render(); };
-  
+
   render(); scan(); renderHours(true); applyMini();
 })();
   </script>
@@ -837,7 +838,8 @@
 
   const panel = document.createElement('div');
   panel.setAttribute('data-reit-counter', 'panel');
-  panel.style = 'position:fixed;top:58px;bottom:24px;right:20px;background:rgba(248, 250, 252, 0.95);color:#1e293b;padding:14px;border-radius:16px;z-index:999999;font-family:' + technoFont + ';width:320px;overflow-y:auto;box-sizing:border-box;backdrop-filter:blur(12px);box-shadow:0 10px 30px -5px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);scrollbar-width:thin;transform:translateX(0);opacity:1;pointer-events:auto;transition:transform .35s cubic-bezier(0.4, 0, 0.2, 1),opacity .35s ease';
+  // Розширено ширину до 335px та збільшено нижній padding до 24px
+  panel.style = 'position:fixed;top:58px;bottom:24px;right:20px;background:rgba(248, 250, 252, 0.95);color:#1e293b;padding:14px 14px 24px 14px;border-radius:16px;z-index:999999;font-family:' + technoFont + ';width:335px;overflow-y:auto;box-sizing:border-box;backdrop-filter:blur(12px);box-shadow:0 10px 30px -5px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);scrollbar-width:thin;transform:translateX(0);opacity:1;pointer-events:auto;transition:transform .35s cubic-bezier(0.4, 0, 0.2, 1),opacity .35s ease';
   
   panel.innerHTML = `
   <div id="mainView">
@@ -857,7 +859,7 @@
         <div id="left" style="font-size:22px; font-weight:900;">0</div>
       </div>
     </div>
-    <div id="hours" style="margin-top:8px;"></div>
+    <div id="hours" style="margin-top:8px; padding-bottom:10px;"></div>
   </div>
   <div id="settingsView" style="display:none">
     <div style="display:flex; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:10px;">
@@ -865,29 +867,29 @@
       <div style="font-size:16px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;">Ustawienia</div>
     </div>
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-      <div style="display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:center; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;">
+      <div style="display:grid; grid-template-columns:105px 1fr; gap:8px; align-items:center; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase;">
         <label>Pozycja mini</label>
-        <select id="pos" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; font-family:${technoFont}; font-weight:700;">
-          <option value="bl" ${miniPos === 'bl' ? 'selected' : ''}>Dół - Lewo</option>
-          <option value="br" ${miniPos === 'br' ? 'selected' : ''}>Dół - Prawo</option>
-          <option value="tl" ${miniPos === 'tl' ? 'selected' : ''}>Góra - Lewo</option>
-          <option value="tr" ${miniPos === 'tr' ? 'selected' : ''}>Góra - Prawo</option>
+        <select id="pos" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; font-family:\${technoFont}; font-weight:700; box-sizing:border-box;">
+          <option value="bl" \${miniPos === 'bl' ? 'selected' : ''}>Dół - Lewo</option>
+          <option value="br" \${miniPos === 'br' ? 'selected' : ''}>Dół - Prawo</option>
+          <option value="tl" \${miniPos === 'tl' ? 'selected' : ''}>Góra - Lewo</option>
+          <option value="tr" \${miniPos === 'tr' ? 'selected' : ''}>Góra - Prawo</option>
         </select>
         <label>Kolor mini</label>
-        <input type="color" id="c" value="${manualColor}" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; padding:0;">
+        <input type="color" id="c" value="\${manualColor}" style="width:100%; height:28px; border:1px solid #e2e8f0; border-radius:6px; cursor:pointer; background:#fff; padding:0; box-sizing:border-box;">
         <label>Rozmiar mini</label>
-        <input type="range" id="s" min="10" max="45" value="${miniSize}" style="width:100%; accent-color:#3b82f6;">
-        <label>Widoczність</label>
-        <input type="range" id="o" min="0" max="100" value="${miniOpacity}" style="width:100%; accent-color:#3b82f6;">
+        <input type="range" id="s" min="10" max="45" value="\${miniSize}" style="width:100%; accent-color:#3b82f6; box-sizing:border-box;">
+        <label>Widoczność</label>
+        <input type="range" id="o" min="0" max="100" value="\${miniOpacity}" style="width:100%; accent-color:#3b82f6; box-sizing:border-box;">
         <label>Reit/h cel</label>
-        <input type="text" inputmode="numeric" id="target" value="${targetPerHour}" style="padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:${technoFont}; font-weight:900; width:100%; box-sizing:border-box; outline:none;">
+        <input type="text" inputmode="numeric" id="target" value="\${targetPerHour}" style="padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#1e293b; font-family:\${technoFont}; font-weight:900; width:100%; box-sizing:border-box; outline:none;">
       </div>
     </div>
     <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
       <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;">Pozostało zamiast sumy <input id="leftMode" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;"></label>
       <label style="display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:900; text-transform:uppercase; color:#1e293b;">Auto-kolor tempa <input id="autoColor" type="checkbox" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;"></label>
     </div>
-    <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+    <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:10px; padding:12px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
       <div style="font-size:10px; font-weight:900; text-transform:uppercase; margin-bottom:8px; color:#64748b;">Podgląd mini widgetu</div>
       <div id="miniPreview" style="font-size:20px; font-weight:900; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center; color:#1e293b;">0 | 0.00/h</div>
     </div>
