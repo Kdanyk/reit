@@ -6,16 +6,37 @@
   <title>C-RET & Narzędzia | Skrypty</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
     :root {
-      --bg-dark: #0f172a; --bg-light: #082f49; --surface: rgba(255, 255, 255, 0.04);
-      --surface-hover: rgba(255, 255, 255, 0.08); --border: rgba(56, 189, 248, 0.15);
-      --text: #f8fafc; --text-muted: #94a3b8; --accent: #38bdf8; --accent-dark: #0284c7;
+      --bg-dark: #0f172a;
+      --bg-light: #082f49;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-hover: rgba(255, 255, 255, 0.08);
+      --border: rgba(56, 189, 248, 0.15);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-dark: #0284c7;
     }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.15), transparent 40%), radial-gradient(circle at bottom left, rgba(2, 132, 199, 0.15), transparent 40%), linear-gradient(135deg, var(--bg-dark), var(--bg-light));
-      background-attachment: fixed; color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.6; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 50px 20px 20px;
+      background: 
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.15), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(2, 132, 199, 0.15), transparent 40%),
+        linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 50px 20px 20px;
     }
+
     .container { max-width: 1100px; width: 100%; flex: 1; }
     header { text-align: center; margin-bottom: 40px; }
     .badge { display: inline-block; background: rgba(56, 189, 248, 0.1); color: var(--accent); padding: 6px 16px; border-radius: 99px; font-size: 13px; font-weight: 700; margin-bottom: 16px; border: 1px solid var(--border); }
@@ -29,22 +50,30 @@
     .features-list { list-style: none; font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
     .features-list li { position: relative; padding-left: 20px; margin-bottom: 8px; }
     .features-list li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: bold; }
+    
     .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 20px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; cursor: pointer; transition: all 0.25s ease; border: none; margin-bottom: 12px; }
     .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff; }
     .btn-primary:hover { transform: translateY(-2px); }
     .btn-secondary { background: var(--surface); color: var(--accent); border: 1px dashed var(--border); }
     .btn-secondary:hover { background: var(--surface-hover); border-color: var(--accent); }
+    
     #status { font-size: 13px; color: var(--accent); text-align: center; min-height: 20px; font-weight: 500; margin-bottom: 0; }
+    
     .changelog-wrapper { display: flex; flex-direction: column; gap: 16px; }
     .changelog-item { position: relative; padding-left: 20px; border-left: 2px solid var(--border); }
     .changelog-item::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--bg-dark); border: 2px solid var(--accent); }
     .changelog-version { font-weight: 700; color: var(--accent); font-size: 15px; margin-bottom: 4px; line-height: 1; }
     .changelog-date { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
     .changelog-notes { font-size: 13px; color: var(--text-muted); }
+    
     footer { text-align: center; padding-top: 40px; padding-bottom: 20px; margin-top: auto; }
     .feedback-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 8px 18px; border-radius: 99px; font-size: 13px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
     .feedback-btn:hover { background: var(--surface-hover); color: var(--text); border-color: var(--text-muted); }
-    @media (max-width: 800px) { .cards-grid { grid-template-columns: 1fr; } h1 { font-size: 36px; } }
+
+    @media (max-width: 800px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 36px; }
+    }
   </style>
 </head>
 <body>
@@ -66,7 +95,7 @@
           <li>Przycisk przerwy (pauza tempa na 30 min)</li>
           <li>Skróty: <code>Ctrl+Z</code> (ustawienia), <code>Shift+X</code> (pokaż)</li>
         </ul>
-        <button class="btn btn-primary" onclick="copyTampermonkeyCode()">
+        <button class="btn btn-primary" onclick="window.copyTampermonkeyCode()">
           📋 Skopiuj kod do schowka
         </button>
         <div id="status"></div>
@@ -80,7 +109,7 @@
           <li>Duży interfejs po prawej stronie ekranu</li>
         </ul>
         <a id="cret-bookmark-btn" class="btn btn-secondary" href="#">
-          ⏳ Завантаження...
+          ⏳ Ładowanie...
         </a>
       </div>
 
@@ -88,12 +117,12 @@
         <h2>🧼 Clean-Decant PL</h2>
         <p>Specjalna wersja licznika dostosowana do procesu Clean-Decant w języku polskim.</p>
         <ul class="features-list">
-          <li>Odświeżony interfejs без неону та тіней</li>
+          <li>Odświeżony interfejs bez funkcji problem/off-task</li>
           <li>Reit docelowy: 110/h</li>
           <li>Wybór pozycji widgetu na ekranie</li>
         </ul>
         <a id="cd-pl-bookmark-btn" class="btn btn-secondary" href="#">
-          ⏳ Завантаження...
+          ⏳ Ładowanie...
         </a>
       </div>
 
@@ -113,12 +142,13 @@
       <div class="card full-width">
         <h2>🔄 Dziennik zmian</h2>
         <p style="margin-bottom: 24px;">Historia aktualizacji skryptów.</p>
+        
         <div class="changelog-wrapper">
           <div class="changelog-item">
             <div class="changelog-version">v6.6 Модульна структура</div>
             <div class="changelog-date">Останнє оновлення</div>
             <div class="changelog-notes">
-              Скрипти винесено в окремі файли для легшого оновлення. Виправлено візуальні баги (зрізання) у панелі налаштувань.
+              Скрипти винесено в окремі файли (.js). Виправлено візуальні баги в налаштуваннях та проблему з кодуванням символів у закладках.
             </div>
           </div>
         </div>
