@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    
     // Функція для створення безпечного посилання закладки
     function makeBookmarklet(rawCode) {
         let cleanCode = rawCode.replace(/\s+/g, ' ').trim();
+        // Кодуємо знак # (для кольорів HEX) та %
         cleanCode = cleanCode.replace(/%/g, '%25').replace(/#/g, '%23');
         return "javascript:" + cleanCode;
     }
@@ -15,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         btn.textContent = "🔖 Przeciągnij do paska zakładek";
     } catch (e) {
         console.error("Błąd ładowania C-RET:", e);
-        document.getElementById('cret-bookmark-btn').textContent = "❌ Pomylka ładowania";
+        document.getElementById('cret-bookmark-btn').textContent = "❌ Błąd ładowania";
     }
 
     // Завантажуємо Clean-Decant PL
@@ -27,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         btn.textContent = "🔖 Przeciągnij do paska (PL)";
     } catch (e) {
         console.error("Błąd ładowania CD-PL:", e);
-        document.getElementById('cd-pl-bookmark-btn').textContent = "❌ Pomylka ładowania";
+        document.getElementById('cd-pl-bookmark-btn').textContent = "❌ Błąd ładowania";
     }
 
     // Функція копіювання для Tampermonkey
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(tmCode);
             } else {
-                // Fallback (старий метод)
+                // Fallback 
                 const textArea = document.createElement("textarea");
                 textArea.value = tmCode;
                 textArea.style.position = "fixed";
